@@ -22,6 +22,7 @@ The system should allow users to:
 5. Scan a book's ISBN barcode to find the book.
 6. Get book recommendations from an AI assistant.
 7. Ask an AI chatbot for a summary of a whole book, a chapter, or a page range, and ask follow-up questions about it.
+8. Allow library staff (Admin) to add, edit, and remove books and to record book returns.
 
 ## 3. Business Value
 
