@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Bookmate</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_ai">AI</string>
+    <string name="nav_my_books">My Books</string>
+    <string name="nav_profile">Profile</string>
 </resources>
