@@ -1,11 +1,16 @@
 package com.bookmate.app.ui.theme
 
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val Cream = Color(0xFFFAF2DE)
+val Sand = Color(0xFFEADCBB)
+val Sage = Color(0xFFC0C0A7)
+val Moss = Color(0xFF9CA793)
+val Olive = Color(0xFF78866E)
+val Green = Color(0xFF576B48)
+val DarkGreen = Color(0xFF324B21)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val BookmateGradient = Brush.verticalGradient(
+    colors = listOf(Cream, Sand, Sage, Moss, Olive)
+)
