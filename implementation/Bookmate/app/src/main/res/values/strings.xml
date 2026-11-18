@@ -5,4 +5,18 @@
     <string name="nav_ai">AI</string>
     <string name="nav_my_books">My Books</string>
     <string name="nav_profile">Profile</string>
+    <string name="screen_splash">Splash</string>
+    <string name="screen_login">Login</string>
+    <string name="screen_register">Register</string>
+    <string name="screen_onboarding">Onboarding</string>
+    <string name="screen_book_detail">Book Detail</string>
+    <string name="screen_reader">Reader</string>
+    <string name="screen_scan">Scan</string>
+    <string name="screen_settings">Settings</string>
+    <string name="screen_subscription">Subscription</string>
+    <string name="screen_checkout">Checkout</string>
+    <string name="screen_admin_add_book">Admin: Add a book</string>
+    <string name="screen_admin_manage_books">Admin: Manage books</string>
+    <string name="screen_admin_subscribers">Admin: Subscribers</string>
+    <string name="screen_admin_plan_price">Admin: Plan price</string>
 </resources>
