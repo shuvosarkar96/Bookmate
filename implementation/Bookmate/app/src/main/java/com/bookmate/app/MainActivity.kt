@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.bookmate.app.ui.components.BookmateCard
+import com.bookmate.app.ui.components.BookmateChip
 import com.bookmate.app.ui.components.BookmateTextField
 import com.bookmate.app.ui.components.PrimaryButton
 import com.bookmate.app.ui.theme.BookmateGradient
@@ -39,6 +42,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting() {
     var text by remember { mutableStateOf("") }
+    var firstChip by remember { mutableStateOf(true) }
     val name = stringResource(R.string.app_name)
 
     Column(
@@ -53,6 +57,14 @@ fun Greeting() {
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.primary
         )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            BookmateChip(text = name, selected = firstChip, onClick = { firstChip = true })
+            BookmateChip(text = name, selected = !firstChip, onClick = { firstChip = false })
+        }
+        BookmateCard {
+            Text(text = name, style = MaterialTheme.typography.titleLarge)
+            Text(text = name, style = MaterialTheme.typography.bodyMedium)
+        }
         BookmateTextField(
             value = text,
             onValueChange = { text = it },
