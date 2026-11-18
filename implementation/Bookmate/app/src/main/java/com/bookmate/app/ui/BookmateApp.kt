@@ -20,6 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.bookmate.app.R
+import com.bookmate.app.ui.auth.LoginScreen
 import com.bookmate.app.ui.components.BookmateBottomNav
 import com.bookmate.app.ui.navigation.Routes
 import com.bookmate.app.ui.navigation.route
@@ -79,7 +80,17 @@ fun BookmateApp() {
             modifier = Modifier.fillMaxSize()
         ) {
             placeholder(Routes.SPLASH, R.string.screen_splash)
-            placeholder(Routes.LOGIN, R.string.screen_login)
+            composable(Routes.LOGIN) {
+                LoginScreen(
+                    onLoggedIn = { user ->
+                        val target = if (user.onboardingDone) Routes.HOME else Routes.ONBOARDING
+                        navController.navigate(target) {
+                            popUpTo(Routes.LOGIN) { inclusive = true }
+                        }
+                    },
+                    onCreateAccount = { navController.navigate(Routes.REGISTER) }
+                )
+            }
             placeholder(Routes.REGISTER, R.string.screen_register)
             placeholder(Routes.ONBOARDING, R.string.screen_onboarding)
 
