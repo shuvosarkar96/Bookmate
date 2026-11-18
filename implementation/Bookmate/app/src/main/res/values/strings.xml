@@ -47,4 +47,21 @@
     <string name="error_name_empty">Enter your name.</string>
     <string name="error_password_short">Password must be at least 8 characters.</string>
     <string name="error_password_mismatch">Passwords do not match.</string>
+    <string name="onboarding_title">Pick your favorite genres</string>
+    <string name="onboarding_subtitle">Choose a few so we can suggest books you will like.</string>
+    <string name="onboarding_selected">%1$d selected</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="genre_classic">Classic</string>
+    <string name="genre_mystery">Mystery</string>
+    <string name="genre_science">Science</string>
+    <string name="genre_fantasy">Fantasy</string>
+    <string name="genre_romance">Romance</string>
+    <string name="genre_history">History</string>
+    <string name="genre_adventure">Adventure</string>
+    <string name="genre_poetry">Poetry</string>
+    <string name="genre_biography">Biography</string>
+    <string name="genre_horror">Horror</string>
+    <string name="genre_technology">Technology</string>
+    <string name="genre_self_help">Self-help</string>
 </resources>

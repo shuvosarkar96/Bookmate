@@ -22,6 +22,7 @@ import androidx.navigation.navArgument
 import com.bookmate.app.R
 import com.bookmate.app.ui.auth.LoginScreen
 import com.bookmate.app.ui.auth.RegisterScreen
+import com.bookmate.app.ui.onboarding.OnboardingScreen
 import com.bookmate.app.ui.components.BookmateBottomNav
 import com.bookmate.app.ui.navigation.Routes
 import com.bookmate.app.ui.navigation.route
@@ -102,7 +103,16 @@ fun BookmateApp() {
                     onBack = { navController.popBackStack() }
                 )
             }
-            placeholder(Routes.ONBOARDING, R.string.screen_onboarding)
+            composable(Routes.ONBOARDING) {
+                OnboardingScreen(
+                    onFinished = {
+                        navController.navigate(Routes.HOME) {
+                            popUpTo(Routes.ONBOARDING) { inclusive = true }
+                        }
+                    },
+                    onBack = { navController.popBackStack() }
+                )
+            }
 
             placeholder(Routes.HOME, R.string.nav_home)
             placeholder(Routes.SEARCH, R.string.nav_search)
