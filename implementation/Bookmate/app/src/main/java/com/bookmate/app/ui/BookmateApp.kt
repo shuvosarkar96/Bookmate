@@ -21,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.bookmate.app.R
 import com.bookmate.app.ui.auth.LoginScreen
+import com.bookmate.app.ui.auth.RegisterScreen
 import com.bookmate.app.ui.components.BookmateBottomNav
 import com.bookmate.app.ui.navigation.Routes
 import com.bookmate.app.ui.navigation.route
@@ -91,7 +92,16 @@ fun BookmateApp() {
                     onCreateAccount = { navController.navigate(Routes.REGISTER) }
                 )
             }
-            placeholder(Routes.REGISTER, R.string.screen_register)
+            composable(Routes.REGISTER) {
+                RegisterScreen(
+                    onRegistered = {
+                        navController.navigate(Routes.ONBOARDING) {
+                            popUpTo(Routes.LOGIN) { inclusive = true }
+                        }
+                    },
+                    onBack = { navController.popBackStack() }
+                )
+            }
             placeholder(Routes.ONBOARDING, R.string.screen_onboarding)
 
             placeholder(Routes.HOME, R.string.nav_home)

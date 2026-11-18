@@ -35,4 +35,16 @@
     <string name="error_weak_password">Use a stronger password (8 or more characters).</string>
     <string name="error_network">No internet. Try again when you are online.</string>
     <string name="error_unknown">Something went wrong.</string>
+    <string name="action_back">Back</string>
+    <string name="register_title">Create account</string>
+    <string name="register_name">Full name</string>
+    <string name="register_email">Email</string>
+    <string name="register_password">Password (8+ characters)</string>
+    <string name="register_confirm">Confirm password</string>
+    <string name="register_button">Create account</string>
+    <string name="register_have_account">Already have an account? </string>
+    <string name="register_login">Log in</string>
+    <string name="error_name_empty">Enter your name.</string>
+    <string name="error_password_short">Password must be at least 8 characters.</string>
+    <string name="error_password_mismatch">Passwords do not match.</string>
 </resources>
