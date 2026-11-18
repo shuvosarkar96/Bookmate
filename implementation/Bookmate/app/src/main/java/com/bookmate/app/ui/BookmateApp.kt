@@ -23,6 +23,7 @@ import com.bookmate.app.R
 import com.bookmate.app.ui.auth.LoginScreen
 import com.bookmate.app.ui.auth.RegisterScreen
 import com.bookmate.app.ui.onboarding.OnboardingScreen
+import com.bookmate.app.ui.splash.SplashScreen
 import com.bookmate.app.ui.components.BookmateBottomNav
 import com.bookmate.app.ui.navigation.Routes
 import com.bookmate.app.ui.navigation.route
@@ -78,10 +79,18 @@ fun BookmateApp() {
     ) {
         NavHost(
             navController = navController,
-            startDestination = Routes.HOME,
+            startDestination = Routes.SPLASH,
             modifier = Modifier.fillMaxSize()
         ) {
-            placeholder(Routes.SPLASH, R.string.screen_splash)
+            composable(Routes.SPLASH) {
+                SplashScreen(
+                    onResolved = { target ->
+                        navController.navigate(target) {
+                            popUpTo(Routes.SPLASH) { inclusive = true }
+                        }
+                    }
+                )
+            }
             composable(Routes.LOGIN) {
                 LoginScreen(
                     onLoggedIn = { user ->
@@ -110,7 +119,11 @@ fun BookmateApp() {
                             popUpTo(Routes.ONBOARDING) { inclusive = true }
                         }
                     },
-                    onBack = { navController.popBackStack() }
+                    onBack = {
+                        navController.navigate(Routes.LOGIN) {
+                            popUpTo(Routes.ONBOARDING) { inclusive = true }
+                        }
+                    }
                 )
             }
 
