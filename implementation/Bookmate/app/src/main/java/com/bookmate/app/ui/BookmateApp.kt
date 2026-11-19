@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -21,6 +20,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.bookmate.app.R
 import com.bookmate.app.ui.auth.LoginScreen
+import com.bookmate.app.ui.home.HomeScreen
+import com.bookmate.app.ui.detail.BookDetailScreen
+import com.bookmate.app.ui.search.SearchScreen
 import com.bookmate.app.ui.auth.RegisterScreen
 import com.bookmate.app.ui.onboarding.OnboardingScreen
 import com.bookmate.app.ui.splash.SplashScreen
@@ -127,8 +129,31 @@ fun BookmateApp() {
                 )
             }
 
-            placeholder(Routes.HOME, R.string.nav_home)
-            placeholder(Routes.SEARCH, R.string.nav_search)
+            composable(Routes.HOME) {
+                HomeScreen(
+                    onSearchClick = {
+                        navController.navigate(Routes.SEARCH) {
+                            popUpTo(Routes.HOME) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    onScanClick = { navController.navigate(Routes.SCAN) },
+                    onAskClick = {
+                        navController.navigate(Routes.AI) {
+                            popUpTo(Routes.HOME) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    onBookClick = { bookId -> navController.navigate(Routes.bookDetail(bookId)) }
+                )
+            }
+            composable(Routes.SEARCH) {
+                SearchScreen(
+                    onBookClick = { bookId -> navController.navigate(Routes.bookDetail(bookId)) }
+                )
+            }
             placeholder(Routes.AI, R.string.nav_ai)
             placeholder(Routes.MY_BOOKS, R.string.nav_my_books)
             composable(Routes.PROFILE) {
@@ -139,7 +164,16 @@ fun BookmateApp() {
                 )
             }
 
-            placeholderWithBook(Routes.BOOK_DETAIL, R.string.screen_book_detail)
+            composable(
+                route = Routes.BOOK_DETAIL,
+                arguments = listOf(navArgument(Routes.BOOK_ID_ARG) { type = NavType.StringType })
+            ) {
+                BookDetailScreen(
+                    onBack = { navController.popBackStack() },
+                    onRead = { bookId -> navController.navigate(Routes.reader(bookId)) },
+                    onSubscribe = { navController.navigate(Routes.SUBSCRIPTION) }
+                )
+            }
             placeholderWithBook(Routes.READER, R.string.screen_reader)
             placeholder(Routes.SCAN, R.string.screen_scan)
             placeholder(Routes.SETTINGS, R.string.screen_settings)
@@ -157,7 +191,7 @@ fun BookmateApp() {
                 selected = currentTab,
                 onSelect = { tab ->
                     navController.navigate(tab.route()) {
-                        popUpTo(navController.graph.findStartDestination().id) {
+                        popUpTo(Routes.HOME) {
                             saveState = true
                         }
                         launchSingleTop = true

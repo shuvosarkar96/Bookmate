@@ -1,7 +1,11 @@
 package com.bookmate.app.data.di
 
 import com.bookmate.app.data.repository.FirebaseAuthRepository
+import com.bookmate.app.data.repository.FirebaseBookRepository
+import com.bookmate.app.data.repository.FirestoreSavedBooksRepository
 import com.bookmate.app.domain.repository.AuthRepository
+import com.bookmate.app.domain.repository.BookRepository
+import com.bookmate.app.domain.repository.SavedBooksRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -15,4 +19,12 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindAuthRepository(impl: FirebaseAuthRepository): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindBookRepository(impl: FirebaseBookRepository): BookRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSavedBooksRepository(impl: FirestoreSavedBooksRepository): SavedBooksRepository
 }
