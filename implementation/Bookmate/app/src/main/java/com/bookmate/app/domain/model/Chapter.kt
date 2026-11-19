@@ -4,7 +4,9 @@ package com.bookmate.app.domain.model
 data class Chapter(
     val number: Int,
     val title: String,
-    val paragraphs: List<String>
+    val paragraphs: List<String>,
+    /** The stored, team-checked summary. Null when the chapter has none. */
+    val summary: String? = null
 )
 
 /** The server refused to give the text, for example a Premium book without an active subscription. */
