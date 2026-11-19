@@ -5,4 +5,10 @@ import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class BookmateApp : Application()
+class BookmateApp : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+        AppCheckInstaller.install(this)
+    }
+}
