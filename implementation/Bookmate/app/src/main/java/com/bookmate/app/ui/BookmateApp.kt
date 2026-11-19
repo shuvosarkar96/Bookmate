@@ -21,6 +21,7 @@ import androidx.navigation.navArgument
 import com.bookmate.app.R
 import com.bookmate.app.ui.auth.LoginScreen
 import com.bookmate.app.ui.home.HomeScreen
+import com.bookmate.app.ui.search.SearchScreen
 import com.bookmate.app.ui.auth.RegisterScreen
 import com.bookmate.app.ui.onboarding.OnboardingScreen
 import com.bookmate.app.ui.splash.SplashScreen
@@ -147,7 +148,11 @@ fun BookmateApp() {
                     onBookClick = { bookId -> navController.navigate(Routes.bookDetail(bookId)) }
                 )
             }
-            placeholder(Routes.SEARCH, R.string.nav_search)
+            composable(Routes.SEARCH) {
+                SearchScreen(
+                    onBookClick = { bookId -> navController.navigate(Routes.bookDetail(bookId)) }
+                )
+            }
             placeholder(Routes.AI, R.string.nav_ai)
             placeholder(Routes.MY_BOOKS, R.string.nav_my_books)
             composable(Routes.PROFILE) {

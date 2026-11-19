@@ -73,4 +73,14 @@
     <string name="home_retry">Try again</string>
     <string name="access_free">Free</string>
     <string name="access_premium">Premium</string>
+    <string name="search_filter_all">All</string>
+    <string name="search_filter_genre">Genre</string>
+    <string name="search_all_genres">All genres</string>
+    <string name="search_no_results">No books found</string>
+    <string name="search_no_results_hint">Try another word or filter.</string>
+    <string name="search_clear">Clear</string>
+    <plurals name="search_results">
+        <item quantity="one">%d result</item>
+        <item quantity="other">%d results</item>
+    </plurals>
 </resources>
