@@ -8,6 +8,7 @@ import com.bookmate.app.R
 import com.bookmate.app.domain.model.Book
 import com.bookmate.app.domain.repository.BookRepository
 import com.bookmate.app.domain.repository.SavedBooksRepository
+import com.bookmate.app.domain.repository.SubscriptionRepository
 import com.bookmate.app.ui.navigation.Routes
 import com.bookmate.app.util.canReadBook
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +33,8 @@ data class BookDetailUiState(
 class BookDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val bookRepository: BookRepository,
-    private val savedBooksRepository: SavedBooksRepository
+    private val savedBooksRepository: SavedBooksRepository,
+    private val subscriptionRepository: SubscriptionRepository
 ) : ViewModel() {
 
     private val bookId: String = savedStateHandle.get<String>(Routes.BOOK_ID_ARG).orEmpty()
@@ -53,11 +55,12 @@ class BookDetailViewModel @Inject constructor(
                         _uiState.update { it.copy(isLoading = false, notFound = true) }
                     } else {
                         val saved = savedBooksRepository.isSaved(book.id).getOrDefault(false)
+                        val hasActive = subscriptionRepository.getMySubscription().getOrNull()?.isActive() == true
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
                                 book = book,
-                                canRead = canReadBook(book, hasActiveSubscription = false),
+                                canRead = canReadBook(book, hasActive),
                                 isSaved = saved
                             )
                         }
@@ -66,6 +69,15 @@ class BookDetailViewModel @Inject constructor(
                 .onFailure {
                     _uiState.update { it.copy(isLoading = false, errorRes = R.string.error_unknown) }
                 }
+        }
+    }
+
+    /** Re-checks the subscription, for example after coming back from Checkout. */
+    fun refreshAccess() {
+        val book = _uiState.value.book ?: return
+        viewModelScope.launch {
+            val hasActive = subscriptionRepository.getMySubscription().getOrNull()?.isActive() == true
+            _uiState.update { it.copy(canRead = canReadBook(book, hasActive)) }
         }
     }
 
