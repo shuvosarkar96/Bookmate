@@ -15,6 +15,31 @@ class FirestoreChapterRepository @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : ChapterRepository {
 
+    override suspend fun getChapterSummaries(bookId: String, beforeChapter: Int): Result<Map<Int, String>> =
+        try {
+            val snapshot = firestore.collection("books").document(bookId)
+                .collection("chapters")
+                .whereLessThan("number", beforeChapter.toLong())
+                .get().await()
+            val summaries = mutableMapOf<Int, String>()
+            for (doc in snapshot.documents) {
+                val number = doc.getLong("number")?.toInt() ?: doc.id.toIntOrNull() ?: continue
+                val text = doc.getString("summary")
+                if (!text.isNullOrBlank()) summaries[number] = text
+            }
+            Result.success(summaries)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: FirebaseFirestoreException) {
+            if (e.code == FirebaseFirestoreException.Code.PERMISSION_DENIED) {
+                Result.failure(AccessDeniedException())
+            } else {
+                Result.failure(e)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
     override suspend fun getBookSummary(bookId: String): Result<String?> =
         try {
             val doc = firestore.collection("books").document(bookId)

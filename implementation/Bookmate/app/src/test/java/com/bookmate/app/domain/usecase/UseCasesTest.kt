@@ -42,6 +42,9 @@ private class FakeChapters(
         if (denied) Result.failure(AccessDeniedException()) else Result.success(chapters[chapterNo])
 
     override suspend fun getBookSummary(bookId: String): Result<String?> = Result.success(null)
+
+    override suspend fun getChapterSummaries(bookId: String, beforeChapter: Int): Result<Map<Int, String>> =
+        Result.success(emptyMap())
 }
 
 private fun testBook(description: String = "A count in a castle.") = Book(
