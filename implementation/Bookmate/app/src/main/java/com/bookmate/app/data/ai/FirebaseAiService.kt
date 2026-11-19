@@ -2,9 +2,11 @@ package com.bookmate.app.data.ai
 
 import com.bookmate.app.domain.ai.AiService
 import com.bookmate.app.domain.ai.EmptyAnswerException
+import com.bookmate.app.domain.ai.PromptBuilder
 import com.google.firebase.Firebase
 import com.google.firebase.ai.ai
 import com.google.firebase.ai.type.GenerativeBackend
+import com.google.firebase.ai.type.content
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CancellationException
@@ -17,7 +19,10 @@ class FirebaseAiService @Inject constructor() : AiService {
     // Gemini Developer API through Firebase AI Logic. No API key in the app.
     private val model by lazy {
         Firebase.ai(backend = GenerativeBackend.googleAI())
-            .generativeModel(AiConfig.MODEL_NAME)
+            .generativeModel(
+                modelName = AiConfig.MODEL_NAME,
+                systemInstruction = content { text(PromptBuilder.SYSTEM_INSTRUCTION) }
+            )
     }
 
     override suspend fun generate(prompt: String): Result<String> =

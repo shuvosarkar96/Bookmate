@@ -3,6 +3,7 @@ package com.bookmate.app.ui.ai
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bookmate.app.domain.ai.AiService
+import com.bookmate.app.domain.ai.PromptBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
@@ -57,6 +58,11 @@ class AiTestViewModel @Inject constructor(
     private fun describe(e: Throwable): String = e.javaClass.simpleName + ": " + e.message
 
     private companion object {
-        const val PROMPT = "Say hello to a reader of a library app in one short, friendly sentence."
+        val PROMPT = PromptBuilder.descriptionSummary(
+            title = "Dracula",
+            author = "Bram Stoker",
+            description = "A young solicitor travels to Transylvania to help a nobleman buy a house in England " +
+                "and discovers that his host is a dangerous vampire."
+        )
     }
 }
