@@ -64,4 +64,13 @@
     <string name="genre_horror">Horror</string>
     <string name="genre_technology">Technology</string>
     <string name="genre_self_help">Self-help</string>
+    <string name="home_search_hint">Search books, authors, ISBN</string>
+    <string name="home_recommended_title">Recommended for you</string>
+    <string name="home_recommended_subtitle">Picked from your favorite genres</string>
+    <string name="home_ask_title">Ask Bookmate</string>
+    <string name="home_ask_subtitle">What should I read next?</string>
+    <string name="home_empty">No books yet.</string>
+    <string name="home_retry">Try again</string>
+    <string name="access_free">Free</string>
+    <string name="access_premium">Premium</string>
 </resources>

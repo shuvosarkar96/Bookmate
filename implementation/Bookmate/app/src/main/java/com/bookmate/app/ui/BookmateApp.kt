@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -21,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.bookmate.app.R
 import com.bookmate.app.ui.auth.LoginScreen
+import com.bookmate.app.ui.home.HomeScreen
 import com.bookmate.app.ui.auth.RegisterScreen
 import com.bookmate.app.ui.onboarding.OnboardingScreen
 import com.bookmate.app.ui.splash.SplashScreen
@@ -127,7 +127,26 @@ fun BookmateApp() {
                 )
             }
 
-            placeholder(Routes.HOME, R.string.nav_home)
+            composable(Routes.HOME) {
+                HomeScreen(
+                    onSearchClick = {
+                        navController.navigate(Routes.SEARCH) {
+                            popUpTo(Routes.HOME) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    onScanClick = { navController.navigate(Routes.SCAN) },
+                    onAskClick = {
+                        navController.navigate(Routes.AI) {
+                            popUpTo(Routes.HOME) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    onBookClick = { bookId -> navController.navigate(Routes.bookDetail(bookId)) }
+                )
+            }
             placeholder(Routes.SEARCH, R.string.nav_search)
             placeholder(Routes.AI, R.string.nav_ai)
             placeholder(Routes.MY_BOOKS, R.string.nav_my_books)
@@ -157,7 +176,7 @@ fun BookmateApp() {
                 selected = currentTab,
                 onSelect = { tab ->
                     navController.navigate(tab.route()) {
-                        popUpTo(navController.graph.findStartDestination().id) {
+                        popUpTo(Routes.HOME) {
                             saveState = true
                         }
                         launchSingleTop = true
