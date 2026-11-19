@@ -26,10 +26,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +46,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bookmate.app.R
 import com.bookmate.app.domain.model.Book
@@ -66,6 +71,8 @@ fun ReaderScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val book = state.book
+    DisposableEffect(Unit) { onDispose { viewModel.savePosition() } }
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.savePosition() }
 
     Column(
         modifier = Modifier
@@ -148,6 +155,7 @@ fun ReaderScreen(
                 book = book,
                 onPrevious = viewModel::previousChapter,
                 onNext = viewModel::nextChapter,
+                onParagraphChanged = viewModel::onParagraphChanged,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -206,6 +214,7 @@ private fun ReaderBody(
     book: Book,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onParagraphChanged: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var aiSoon by remember { mutableStateOf(false) }
@@ -234,7 +243,14 @@ private fun ReaderBody(
                     )
 
                     else -> key(state.chapterNo) {
-                        val listState = rememberLazyListState()
+                        val listState = rememberLazyListState(
+                            initialFirstVisibleItemIndex =
+                                state.resumeParagraph.coerceIn(0, chapter.paragraphs.lastIndex)
+                        )
+                        LaunchedEffect(listState) {
+                            snapshotFlow { listState.firstVisibleItemIndex }
+                                .collect { onParagraphChanged(it) }
+                        }
                         LazyColumn(
                             state = listState,
                             modifier = Modifier.fillMaxSize(),
