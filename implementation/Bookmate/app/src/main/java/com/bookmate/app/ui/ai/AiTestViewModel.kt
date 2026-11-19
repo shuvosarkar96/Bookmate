@@ -2,67 +2,70 @@ package com.bookmate.app.ui.ai
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bookmate.app.domain.ai.AiRepository
-import com.bookmate.app.domain.ai.PromptBuilder
+import com.bookmate.app.domain.ai.AiUsageRepository
+import com.bookmate.app.domain.model.AccessType
+import com.bookmate.app.domain.model.Book
+import com.bookmate.app.domain.usecase.GetDescriptionSummary
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class AiTestUiState(
-    val isLoading: Boolean = false,
-    val answer: String = "",
-    val errorDetail: String? = null
-)
-
-/** Temporary: proves that the AI connection works. Replaced by the AI Chat in Step 4.6. */
+/** Temporary test screen for the AI answer component. Replaced by the AI Chat tab in Step 4.6. */
 @HiltViewModel
 class AiTestViewModel @Inject constructor(
-    private val aiService: AiRepository
+    private val getDescriptionSummary: GetDescriptionSummary,
+    private val usage: AiUsageRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(AiTestUiState())
-    val uiState: StateFlow<AiTestUiState> = _uiState.asStateFlow()
+    private val controller = AiAnswerController(viewModelScope, usage) {
+        FirebaseAuth.getInstance().currentUser?.uid
+    }
 
-    fun askOnce() {
-        if (_uiState.value.isLoading) return
-        _uiState.value = AiTestUiState(isLoading = true)
+    val state: StateFlow<AiAnswerState> = controller.state
+
+    private val _remaining = MutableStateFlow<Int?>(null)
+    val remaining: StateFlow<Int?> = _remaining.asStateFlow()
+
+    init {
+        viewModelScope.launch { controller.state.collect { refreshRemaining() } }
+    }
+
+    fun summarize() = controller.run { getDescriptionSummary(DEMO_BOOK) }
+
+    fun retry() = controller.retry()
+
+    fun useUpRequests() {
         viewModelScope.launch {
-            aiService.generate(PROMPT)
-                .onSuccess { text -> _uiState.value = AiTestUiState(answer = text) }
-                .onFailure { e -> _uiState.value = AiTestUiState(errorDetail = describe(e)) }
+            val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
+            repeat(29) { usage.tryConsume(uid) }
+            refreshRemaining()
         }
     }
 
-    fun askStreaming() {
-        if (_uiState.value.isLoading) return
-        _uiState.value = AiTestUiState(isLoading = true)
-        viewModelScope.launch {
-            try {
-                aiService.generateStream(PROMPT).collect { chunk ->
-                    _uiState.update { it.copy(answer = it.answer + chunk) }
-                }
-                _uiState.update { it.copy(isLoading = false) }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, errorDetail = describe(e)) }
-            }
-        }
+    private suspend fun refreshRemaining() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        _remaining.value = uid?.let { usage.remainingToday(it) }
     }
-
-    private fun describe(e: Throwable): String = e.javaClass.simpleName + ": " + e.message
 
     private companion object {
-        val PROMPT = PromptBuilder.descriptionSummary(
+        val DEMO_BOOK = Book(
+            id = "demo",
             title = "Dracula",
             author = "Bram Stoker",
-            description = "A young solicitor travels to Transylvania to help a nobleman buy a house in England " +
-                "and discovers that his host is a dangerous vampire."
+            isbn = "",
+            genre = "Horror",
+            description = "A young solicitor travels to Transylvania to help Count Dracula buy a house " +
+                "in England. He soon finds that he is a prisoner in the castle, and that the Count " +
+                "is a vampire who plans to bring his curse to England.",
+            coverUrl = null,
+            accessType = AccessType.FREE,
+            hasFullText = false,
+            chapterCount = 0,
+            searchKeywords = emptyList()
         )
     }
 }

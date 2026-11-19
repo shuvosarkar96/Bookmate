@@ -141,4 +141,11 @@
     <string name="ai_error_limit">AI help is not available right now. Try again later.</string>
     <string name="ai_error_blocked">I could not answer this. Try asking in another way.</string>
     <string name="ai_error_other">Something went wrong.</string>
+    <string name="ai_answer_notice">AI-generated, may be inaccurate.</string>
+    <string name="ai_answer_loading">Thinking…</string>
+    <string name="ai_answer_retry">Try again</string>
+    <string name="ai_demo_title">AI test</string>
+    <string name="ai_demo_remaining">Requests left today: %1$d</string>
+    <string name="ai_demo_summarize">Summarize Dracula (from description)</string>
+    <string name="ai_demo_use_up">Use up 29 requests (test only)</string>
 </resources>
