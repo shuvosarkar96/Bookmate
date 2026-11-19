@@ -51,6 +51,7 @@ fun HomeScreen(
     onScanClick: () -> Unit,
     onAskClick: () -> Unit,
     onBookClick: (String) -> Unit,
+    onContinueClick: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -73,6 +74,7 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         SearchBar(onSearchClick = onSearchClick, onScanClick = onScanClick)
+        ContinueReadingCard(onClick = onContinueClick)
         Spacer(modifier = Modifier.height(16.dp))
 
         BookmateCard {

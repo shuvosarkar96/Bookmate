@@ -129,4 +129,5 @@
     <string name="reader_ai">Ask Bookmate AI</string>
     <string name="reader_text_size">Change text size</string>
     <string name="reader_text_aa">Aa</string>
+    <string name="home_continue_title">Continue reading</string>
 </resources>

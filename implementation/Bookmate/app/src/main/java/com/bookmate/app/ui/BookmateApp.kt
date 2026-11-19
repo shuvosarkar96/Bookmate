@@ -134,6 +134,7 @@ fun BookmateApp() {
 
             composable(Routes.HOME) {
                 HomeScreen(
+                    onContinueClick = { bookId -> navController.navigate(Routes.reader(bookId)) },
                     onSearchClick = {
                         navController.navigate(Routes.SEARCH) {
                             popUpTo(Routes.HOME) { saveState = true }
