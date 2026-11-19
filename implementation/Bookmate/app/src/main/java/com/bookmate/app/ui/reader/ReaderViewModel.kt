@@ -13,7 +13,16 @@ import com.bookmate.app.domain.repository.ChapterRepository
 import com.bookmate.app.domain.repository.ReadingProgressRepository
 import com.bookmate.app.domain.repository.SettingsRepository
 import com.bookmate.app.domain.repository.SubscriptionRepository
+import com.bookmate.app.domain.ai.AiUsageRepository
+import com.bookmate.app.domain.ai.VirtualPages
+import com.bookmate.app.domain.usecase.AskAboutBook
+import com.bookmate.app.domain.usecase.ExplainPart
+import com.bookmate.app.domain.usecase.GetChapterSummary
+import com.bookmate.app.domain.usecase.GetRecap
+import com.bookmate.app.ui.ai.AiAnswerController
+import com.bookmate.app.ui.ai.AiAnswerState
 import com.bookmate.app.ui.navigation.Routes
+import com.google.firebase.auth.FirebaseAuth
 import com.bookmate.app.util.canReadBook
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -37,6 +46,9 @@ data class ReaderUiState(
     val locked: Boolean = false,
     val finished: Boolean = false,
     val finishFailed: Boolean = false,
+    val aiSheetOpen: Boolean = false,
+    /** Virtual page (about 250 words) shown in the AI sheet. */
+    val aiPage: Int = 1,
     @StringRes val errorRes: Int? = null
 )
 
@@ -47,7 +59,12 @@ class ReaderViewModel @Inject constructor(
     private val chapterRepository: ChapterRepository,
     private val subscriptionRepository: SubscriptionRepository,
     private val progressRepository: ReadingProgressRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val getChapterSummary: GetChapterSummary,
+    private val getRecap: GetRecap,
+    private val explainPart: ExplainPart,
+    private val askAboutBook: AskAboutBook,
+    aiUsageRepository: AiUsageRepository
 ) : ViewModel() {
 
     private val bookId: String = savedStateHandle.get<String>(Routes.BOOK_ID_ARG).orEmpty()
@@ -68,6 +85,61 @@ class ReaderViewModel @Inject constructor(
 
     /** Index of the paragraph at the top of the screen. Kept out of the UI state on purpose. */
     private var currentParagraph = 0
+
+    // ---- AI help (the sheet opened by the floating button) ----
+
+    private val aiController = AiAnswerController(viewModelScope, aiUsageRepository) {
+        FirebaseAuth.getInstance().currentUser?.uid
+    }
+
+    val aiState: StateFlow<AiAnswerState> = aiController.state
+
+    fun openAiSheet() {
+        val chapter = _uiState.value.chapter ?: return
+        aiController.reset()
+        val page = VirtualPages.pageOf(chapter.paragraphs, currentParagraph)
+        _uiState.update { it.copy(aiSheetOpen = true, aiPage = page) }
+    }
+
+    fun closeAiSheet() {
+        aiController.reset()
+        _uiState.update { it.copy(aiSheetOpen = false) }
+    }
+
+    fun aiReset() = aiController.reset()
+
+    fun aiRetry() = aiController.retry()
+
+    fun aiSummarizeChapter() {
+        val state = _uiState.value
+        val book = state.book ?: return
+        val chapter = state.chapterNo
+        aiController.run { getChapterSummary(book, chapter) }
+    }
+
+    fun aiRecap() {
+        val state = _uiState.value
+        val book = state.book ?: return
+        val chapter = state.chapterNo
+        val position = currentParagraph
+        aiController.run { getRecap(book, chapter, position) }
+    }
+
+    fun aiExplain() {
+        val state = _uiState.value
+        val book = state.book ?: return
+        val chapter = state.chapterNo
+        val position = currentParagraph
+        aiController.run { explainPart(book, chapter, position) }
+    }
+
+    fun aiAsk(question: String) {
+        val state = _uiState.value
+        val book = state.book ?: return
+        val chapter = state.chapterNo
+        val position = currentParagraph
+        aiController.run { askAboutBook(book, chapter, position, question) }
+    }
 
     init {
         load()

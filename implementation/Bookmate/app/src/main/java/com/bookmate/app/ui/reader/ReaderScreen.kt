@@ -74,6 +74,21 @@ fun ReaderScreen(
     val textSize by viewModel.textSize.collectAsStateWithLifecycle()
     DisposableEffect(Unit) { onDispose { viewModel.savePosition() } }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.savePosition() }
+    val aiState by viewModel.aiState.collectAsStateWithLifecycle()
+    if (state.aiSheetOpen && book != null) {
+        ReaderAiSheet(
+            chapterNo = state.chapterNo,
+            page = state.aiPage,
+            aiState = aiState,
+            onSummarize = viewModel::aiSummarizeChapter,
+            onRecap = viewModel::aiRecap,
+            onExplain = viewModel::aiExplain,
+            onAsk = viewModel::aiAsk,
+            onRetry = viewModel::aiRetry,
+            onBackToOptions = viewModel::aiReset,
+            onDismiss = viewModel::closeAiSheet
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -159,6 +174,7 @@ fun ReaderScreen(
                 onPrevious = viewModel::previousChapter,
                 onNext = viewModel::nextChapter,
                 onFinish = viewModel::markFinished,
+                onOpenAi = viewModel::openAiSheet,
                 onParagraphChanged = viewModel::onParagraphChanged,
                 textSize = textSize,
                 modifier = Modifier.weight(1f)
@@ -246,11 +262,11 @@ private fun ReaderBody(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onFinish: () -> Unit,
+    onOpenAi: () -> Unit,
     onParagraphChanged: (Int) -> Unit,
     textSize: Int,
     modifier: Modifier = Modifier
 ) {
-    var aiSoon by remember { mutableStateOf(false) }
     val aiLabel = stringResource(R.string.reader_ai)
     val chapter = state.chapter
     val fraction = (state.chapterNo.toFloat() / book.chapterCount.toFloat()).coerceIn(0.03f, 1f)
@@ -345,13 +361,6 @@ private fun ReaderBody(
                             color = MaterialTheme.colorScheme.error
                         )
                     }
-                    if (aiSoon) {
-                        Text(
-                            text = stringResource(R.string.coming_soon),
-                            fontSize = 13.sp,
-                            color = Green
-                        )
-                    }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(
@@ -396,7 +405,7 @@ private fun ReaderBody(
                     .clip(CircleShape)
                     .background(Green)
                     .semantics { contentDescription = aiLabel }
-                    .clickable { aiSoon = true },
+                    .clickable(onClick = onOpenAi),
                 contentAlignment = Alignment.Center
             ) {
                 SparkleIcon(color = Color(0xFFFAF2DE), size = 28.dp)
