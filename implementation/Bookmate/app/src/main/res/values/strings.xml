@@ -83,4 +83,20 @@
         <item quantity="one">%d result</item>
         <item quantity="other">%d results</item>
     </plurals>
+    <string name="detail_premium_title">Premium book</string>
+    <string name="detail_premium_subtitle">Subscribe to read it and use AI on its text</string>
+    <string name="detail_free_title">Free to read</string>
+    <string name="detail_free_subtitle">Read it and use AI on its text</string>
+    <string name="detail_included_title">Included in your subscription</string>
+    <string name="detail_about">About this book</string>
+    <string name="detail_source">Source: Project Gutenberg</string>
+    <string name="detail_chip_full_text">Full text</string>
+    <string name="detail_summarize">Summarize with AI</string>
+    <string name="detail_summarize_description">Summarize with AI (from description)</string>
+    <string name="detail_read">Read</string>
+    <string name="detail_subscribe">Subscribe to read</string>
+    <string name="detail_save">Save book</string>
+    <string name="detail_unsave">Remove from saved</string>
+    <string name="detail_save_failed">Could not update your saved books. Try again.</string>
+    <string name="detail_not_found">This book could not be found.</string>
 </resources>

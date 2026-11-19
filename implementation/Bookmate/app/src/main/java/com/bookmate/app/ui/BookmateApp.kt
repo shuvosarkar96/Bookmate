@@ -21,6 +21,7 @@ import androidx.navigation.navArgument
 import com.bookmate.app.R
 import com.bookmate.app.ui.auth.LoginScreen
 import com.bookmate.app.ui.home.HomeScreen
+import com.bookmate.app.ui.detail.BookDetailScreen
 import com.bookmate.app.ui.search.SearchScreen
 import com.bookmate.app.ui.auth.RegisterScreen
 import com.bookmate.app.ui.onboarding.OnboardingScreen
@@ -163,7 +164,16 @@ fun BookmateApp() {
                 )
             }
 
-            placeholderWithBook(Routes.BOOK_DETAIL, R.string.screen_book_detail)
+            composable(
+                route = Routes.BOOK_DETAIL,
+                arguments = listOf(navArgument(Routes.BOOK_ID_ARG) { type = NavType.StringType })
+            ) {
+                BookDetailScreen(
+                    onBack = { navController.popBackStack() },
+                    onRead = { bookId -> navController.navigate(Routes.reader(bookId)) },
+                    onSubscribe = { navController.navigate(Routes.SUBSCRIPTION) }
+                )
+            }
             placeholderWithBook(Routes.READER, R.string.screen_reader)
             placeholder(Routes.SCAN, R.string.screen_scan)
             placeholder(Routes.SETTINGS, R.string.screen_settings)
