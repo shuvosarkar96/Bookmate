@@ -136,4 +136,9 @@
     <string name="ai_test_title">AI test (temporary)</string>
     <string name="ai_test_once">Ask the AI (single answer)</string>
     <string name="ai_test_stream">Ask the AI (streaming)</string>
+    <string name="ai_error_no_internet">No internet. Try again when you are online.</string>
+    <string name="ai_error_timeout">The AI is taking too long. Try again.</string>
+    <string name="ai_error_limit">AI help is not available right now. Try again later.</string>
+    <string name="ai_error_blocked">I could not answer this. Try asking in another way.</string>
+    <string name="ai_error_other">Something went wrong.</string>
 </resources>

@@ -2,7 +2,7 @@ package com.bookmate.app.ui.ai
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bookmate.app.domain.ai.AiService
+import com.bookmate.app.domain.ai.AiRepository
 import com.bookmate.app.domain.ai.PromptBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -22,7 +22,7 @@ data class AiTestUiState(
 /** Temporary: proves that the AI connection works. Replaced by the AI Chat in Step 4.6. */
 @HiltViewModel
 class AiTestViewModel @Inject constructor(
-    private val aiService: AiService
+    private val aiService: AiRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AiTestUiState())
