@@ -1,0 +1,8 @@
+package com.bookmate.app.domain.repository
+
+import com.bookmate.app.domain.model.Chapter
+
+interface ChapterRepository {
+    /** The chapter, or null if it does not exist. Fails with AccessDeniedException if the Member may not read it. */
+    suspend fun getChapter(bookId: String, chapterNo: Int): Result<Chapter?>
+}

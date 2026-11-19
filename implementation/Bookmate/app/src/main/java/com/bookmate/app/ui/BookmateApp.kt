@@ -22,6 +22,7 @@ import com.bookmate.app.R
 import com.bookmate.app.ui.auth.LoginScreen
 import com.bookmate.app.ui.home.HomeScreen
 import com.bookmate.app.ui.subscription.CheckoutScreen
+import com.bookmate.app.ui.reader.ReaderScreen
 import com.bookmate.app.ui.subscription.SubscriptionScreen
 import com.bookmate.app.ui.detail.BookDetailScreen
 import com.bookmate.app.ui.search.SearchScreen
@@ -176,7 +177,15 @@ fun BookmateApp() {
                     onSubscribe = { navController.navigate(Routes.SUBSCRIPTION) }
                 )
             }
-            placeholderWithBook(Routes.READER, R.string.screen_reader)
+            composable(
+                route = Routes.READER,
+                arguments = listOf(navArgument(Routes.BOOK_ID_ARG) { type = NavType.StringType })
+            ) {
+                ReaderScreen(
+                    onBack = { navController.popBackStack() },
+                    onSubscribe = { navController.navigate(Routes.SUBSCRIPTION) }
+                )
+            }
             placeholder(Routes.SCAN, R.string.screen_scan)
             placeholder(Routes.SETTINGS, R.string.screen_settings)
             composable(Routes.SUBSCRIPTION) {

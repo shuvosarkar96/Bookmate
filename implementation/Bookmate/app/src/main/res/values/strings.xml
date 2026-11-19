@@ -119,4 +119,12 @@
     <string name="checkout_confirm">Confirm</string>
     <string name="checkout_cancel">Cancel</string>
     <string name="checkout_failed">Could not complete the subscription. Try again.</string>
+    <string name="reader_chapter">Chapter %1$d</string>
+    <string name="reader_chapter_of">Chapter %1$d of %2$d</string>
+    <string name="reader_previous">Previous</string>
+    <string name="reader_next">Next</string>
+    <string name="reader_locked_message">Subscribe to read this book.</string>
+    <string name="reader_no_text">This book has no text to read.</string>
+    <string name="reader_empty">This chapter is empty.</string>
+    <string name="reader_ai">Ask Bookmate AI</string>
 </resources>
