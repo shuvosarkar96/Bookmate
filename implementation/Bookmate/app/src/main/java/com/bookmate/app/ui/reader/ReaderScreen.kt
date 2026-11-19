@@ -158,6 +158,7 @@ fun ReaderScreen(
                 book = book,
                 onPrevious = viewModel::previousChapter,
                 onNext = viewModel::nextChapter,
+                onFinish = viewModel::markFinished,
                 onParagraphChanged = viewModel::onParagraphChanged,
                 textSize = textSize,
                 modifier = Modifier.weight(1f)
@@ -244,6 +245,7 @@ private fun ReaderBody(
     book: Book,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    onFinish: () -> Unit,
     onParagraphChanged: (Int) -> Unit,
     textSize: Int,
     modifier: Modifier = Modifier
@@ -336,6 +338,13 @@ private fun ReaderBody(
                         fontSize = 13.sp,
                         color = TextPrimary
                     )
+                    if (state.finishFailed) {
+                        Text(
+                            text = stringResource(R.string.reader_finish_failed),
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                     if (aiSoon) {
                         Text(
                             text = stringResource(R.string.coming_soon),
@@ -356,9 +365,15 @@ private fun ReaderBody(
                         modifier = Modifier.weight(1f)
                     )
                     NavPill(
-                        text = stringResource(R.string.reader_next),
-                        enabled = state.chapterNo < book.chapterCount && !state.chapterLoading,
-                        onClick = onNext,
+                        text = stringResource(
+                            when {
+                                state.chapterNo < book.chapterCount -> R.string.reader_next
+                                state.finished -> R.string.reader_finished
+                                else -> R.string.reader_finish
+                            }
+                        ),
+                        enabled = !state.chapterLoading && (state.chapterNo < book.chapterCount || !state.finished),
+                        onClick = if (state.chapterNo < book.chapterCount) onNext else onFinish,
                         modifier = Modifier.weight(1f)
                     )
                 }

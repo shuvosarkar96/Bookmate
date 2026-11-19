@@ -35,6 +35,8 @@ data class ReaderUiState(
     /** Paragraph index to scroll to when the chapter opens (saved position, otherwise 0). */
     val resumeParagraph: Int = 0,
     val locked: Boolean = false,
+    val finished: Boolean = false,
+    val finishFailed: Boolean = false,
     @StringRes val errorRes: Int? = null
 )
 
@@ -97,7 +99,7 @@ class ReaderViewModel @Inject constructor(
             val startChapter = (progress?.chapter ?: 1).coerceIn(1, book.chapterCount)
             val startParagraph =
                 if (progress != null && progress.chapter == startChapter) progress.paragraph.coerceAtLeast(0) else 0
-            _uiState.update { it.copy(book = book) }
+            _uiState.update { it.copy(book = book, finished = progress?.finished == true) }
             openChapter(startChapter, startParagraph)
         }
     }
@@ -121,6 +123,18 @@ class ReaderViewModel @Inject constructor(
         val state = _uiState.value
         if (state.chapterLoading || state.chapterNo <= 1) return
         viewModelScope.launch { openChapter(state.chapterNo - 1, 0) }
+    }
+
+    /** The Finish button on the last chapter. */
+    fun markFinished() {
+        val state = _uiState.value
+        if (state.book == null || state.finished) return
+        _uiState.update { it.copy(finishFailed = false) }
+        viewModelScope.launch {
+            progressRepository.markFinished(bookId, state.chapterNo)
+                .onSuccess { _uiState.update { s -> s.copy(finished = true) } }
+                .onFailure { _uiState.update { s -> s.copy(finishFailed = true) } }
+        }
     }
 
     /** Called by the screen while the Member scrolls. */

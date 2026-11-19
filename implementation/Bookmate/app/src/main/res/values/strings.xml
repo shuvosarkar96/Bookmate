@@ -130,4 +130,7 @@
     <string name="reader_text_size">Change text size</string>
     <string name="reader_text_aa">Aa</string>
     <string name="home_continue_title">Continue reading</string>
+    <string name="reader_finish">Mark as finished</string>
+    <string name="reader_finished">Finished</string>
+    <string name="reader_finish_failed">Could not save. Try again.</string>
 </resources>

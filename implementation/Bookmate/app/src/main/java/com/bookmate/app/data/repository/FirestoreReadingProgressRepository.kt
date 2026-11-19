@@ -41,6 +41,18 @@ class FirestoreReadingProgressRepository @Inject constructor(
             Unit
         }
 
+    override suspend fun markFinished(bookId: String, chapter: Int): Result<Unit> = safeCall {
+        val ref = progressRef(bookId) ?: error("Not signed in")
+        val data = mapOf<String, Any>(
+            "chapter" to chapter,
+            "finished" to true,
+            "finishedAt" to FieldValue.serverTimestamp(),
+            "updatedAt" to FieldValue.serverTimestamp()
+        )
+        ref.set(data, SetOptions.merge()).await()
+        Unit
+    }
+
     override suspend fun getLatestInProgress(): Result<BookProgress?> = safeCall {
         val uid = auth.currentUser?.uid ?: return@safeCall null
         val snapshot = firestore.collection("users").document(uid)
