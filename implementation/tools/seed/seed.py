@@ -13,6 +13,8 @@ from pathlib import Path
 import firebase_admin
 from firebase_admin import auth, credentials, firestore
 
+import gutenberg
+
 EXPECTED_PROJECT = "bookmate-690a5"
 KEY_PATH = Path(__file__).with_name("serviceAccountKey.json")
 
@@ -166,6 +168,55 @@ def seed_books(db):
         print(f"book: {book['id']} ({'created' if is_new else 'updated'})")
 
 
+def seed_fulltext_books(db):
+    for book in gutenberg.GUTENBERG_BOOKS:
+        chapters, _ = gutenberg.load_book(book)
+        if len(chapters) != book["expectedChapters"]:
+            sys.exit(
+                f"{book['id']}: found {len(chapters)} chapters, "
+                f"expected {book['expectedChapters']}. Stopped."
+            )
+        book_ref = db.collection("books").document(book["id"])
+        data = {
+            "title": book["title"],
+            "author": book["author"],
+            "isbn": "",
+            "genre": book["genre"],
+            "description": book["description"],
+            "accessType": book["accessType"],
+            "hasFullText": True,
+            "chapterCount": len(chapters),
+            "searchKeywords": make_keywords(book["title"], book["author"], book["genre"]),
+        }
+        upsert(book_ref, data, created=True, updated=True)
+
+        chapters_ref = book_ref.collection("chapters")
+        keep = {str(chapter["number"]) for chapter in chapters}
+        for old_doc in chapters_ref.stream():
+            if old_doc.id not in keep:
+                old_doc.reference.delete()
+
+        for start in range(0, len(chapters), 20):
+            batch = db.batch()
+            for chapter in chapters[start:start + 20]:
+                batch.set(
+                    chapters_ref.document(str(chapter["number"])),
+                    {
+                        "number": chapter["number"],
+                        "title": chapter["title"],
+                        "paragraphs": chapter["paragraphs"],
+                    },
+                    merge=True,
+                )
+            batch.commit()
+
+        paragraph_count = sum(len(chapter["paragraphs"]) for chapter in chapters)
+        print(
+            f"fulltext: {book['id']} ({len(chapters)} chapters, "
+            f"{paragraph_count} paragraphs, {book['accessType']})"
+        )
+
+
 def get_or_create_user(email, name):
     try:
         return auth.get_user_by_email(email), False
@@ -208,13 +259,15 @@ def seed_accounts(db):
 
 def main():
     parser = argparse.ArgumentParser(description="Seed Bookmate demo data")
-    parser.add_argument("--only", choices=["plan", "accounts", "books"], help="run one part only")
+    parser.add_argument("--only", choices=["plan", "accounts", "books", "fulltext"], help="run one part only")
     args = parser.parse_args()
     db = init_db()
     if args.only in (None, "plan"):
         seed_plan(db)
     if args.only in (None, "books"):
         seed_books(db)
+    if args.only in (None, "fulltext"):
+        seed_fulltext_books(db)
     if args.only in (None, "accounts"):
         seed_accounts(db)
     print("Done.")
