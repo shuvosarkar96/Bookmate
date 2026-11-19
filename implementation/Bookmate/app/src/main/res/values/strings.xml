@@ -127,4 +127,6 @@
     <string name="reader_no_text">This book has no text to read.</string>
     <string name="reader_empty">This chapter is empty.</string>
     <string name="reader_ai">Ask Bookmate AI</string>
+    <string name="reader_text_size">Change text size</string>
+    <string name="reader_text_aa">Aa</string>
 </resources>

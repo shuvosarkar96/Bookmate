@@ -71,6 +71,7 @@ fun ReaderScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val book = state.book
+    val textSize by viewModel.textSize.collectAsStateWithLifecycle()
     DisposableEffect(Unit) { onDispose { viewModel.savePosition() } }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.savePosition() }
 
@@ -86,7 +87,9 @@ fun ReaderScreen(
                 !state.chapter?.title.isNullOrBlank() -> state.chapter?.title.orEmpty()
                 else -> stringResource(R.string.reader_chapter, state.chapterNo)
             },
-            onBack = onBack
+            onBack = onBack,
+            showTextSize = book != null && !state.isLoading && !state.locked && state.errorRes == null,
+            onTextSize = viewModel::cycleTextSize
         )
         when {
             state.isLoading -> Box(
@@ -156,6 +159,7 @@ fun ReaderScreen(
                 onPrevious = viewModel::previousChapter,
                 onNext = viewModel::nextChapter,
                 onParagraphChanged = viewModel::onParagraphChanged,
+                textSize = textSize,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -163,7 +167,14 @@ fun ReaderScreen(
 }
 
 @Composable
-private fun ReaderHeader(title: String, subtitle: String, onBack: () -> Unit) {
+private fun ReaderHeader(
+    title: String,
+    subtitle: String,
+    onBack: () -> Unit,
+    showTextSize: Boolean,
+    onTextSize: () -> Unit
+) {
+    val textSizeLabel = stringResource(R.string.reader_text_size)
     val backLabel = stringResource(R.string.action_back)
     Row(
         modifier = Modifier
@@ -204,7 +215,26 @@ private fun ReaderHeader(title: String, subtitle: String, onBack: () -> Unit) {
                 overflow = TextOverflow.Ellipsis
             )
         }
-        Spacer(modifier = Modifier.size(44.dp))
+        if (showTextSize) {
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .background(CardSurface)
+                    .semantics { contentDescription = textSizeLabel }
+                    .clickable(onClick = onTextSize),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.reader_text_aa),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextPrimary
+                )
+            }
+        } else {
+            Spacer(modifier = Modifier.size(44.dp))
+        }
     }
 }
 
@@ -215,6 +245,7 @@ private fun ReaderBody(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onParagraphChanged: (Int) -> Unit,
+    textSize: Int,
     modifier: Modifier = Modifier
 ) {
     var aiSoon by remember { mutableStateOf(false) }
@@ -260,8 +291,8 @@ private fun ReaderBody(
                             items(chapter.paragraphs) { paragraph ->
                                 Text(
                                     text = paragraph,
-                                    fontSize = 17.sp,
-                                    lineHeight = 28.sp,
+                                    fontSize = textSize.sp,
+                                    lineHeight = (textSize * 1.65f).sp,
                                     color = TextPrimary
                                 )
                             }

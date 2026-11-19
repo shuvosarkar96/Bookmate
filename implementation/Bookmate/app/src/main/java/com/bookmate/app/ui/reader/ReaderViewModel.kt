@@ -11,6 +11,7 @@ import com.bookmate.app.domain.model.Chapter
 import com.bookmate.app.domain.repository.BookRepository
 import com.bookmate.app.domain.repository.ChapterRepository
 import com.bookmate.app.domain.repository.ReadingProgressRepository
+import com.bookmate.app.domain.repository.SettingsRepository
 import com.bookmate.app.domain.repository.SubscriptionRepository
 import com.bookmate.app.ui.navigation.Routes
 import com.bookmate.app.util.canReadBook
@@ -19,7 +20,9 @@ import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -41,13 +44,25 @@ class ReaderViewModel @Inject constructor(
     private val bookRepository: BookRepository,
     private val chapterRepository: ChapterRepository,
     private val subscriptionRepository: SubscriptionRepository,
-    private val progressRepository: ReadingProgressRepository
+    private val progressRepository: ReadingProgressRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val bookId: String = savedStateHandle.get<String>(Routes.BOOK_ID_ARG).orEmpty()
 
     private val _uiState = MutableStateFlow(ReaderUiState())
     val uiState: StateFlow<ReaderUiState> = _uiState.asStateFlow()
+
+    /** Reading text size in sp, from DataStore. */
+    val textSize: StateFlow<Int> = settingsRepository.readingTextSize
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SettingsRepository.DEFAULT_TEXT_SIZE)
+
+    /** The Aa button: next size in the list, then back to the first. */
+    fun cycleTextSize() {
+        val sizes = SettingsRepository.TEXT_SIZES
+        val next = sizes[(sizes.indexOf(textSize.value) + 1) % sizes.size]
+        viewModelScope.launch { settingsRepository.setReadingTextSize(next) }
+    }
 
     /** Index of the paragraph at the top of the screen. Kept out of the UI state on purpose. */
     private var currentParagraph = 0
