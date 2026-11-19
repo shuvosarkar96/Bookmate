@@ -23,7 +23,7 @@ import com.bookmate.app.ui.auth.LoginScreen
 import com.bookmate.app.ui.home.HomeScreen
 import com.bookmate.app.ui.subscription.CheckoutScreen
 import com.bookmate.app.ui.reader.ReaderScreen
-import com.bookmate.app.ui.ai.AiTestScreen
+import com.bookmate.app.ui.ai.AiChatScreen
 import com.bookmate.app.ui.subscription.SubscriptionScreen
 import com.bookmate.app.ui.detail.BookDetailScreen
 import com.bookmate.app.ui.search.SearchScreen
@@ -159,7 +159,17 @@ fun BookmateApp() {
                     onBookClick = { bookId -> navController.navigate(Routes.bookDetail(bookId)) }
                 )
             }
-            composable(Routes.AI) { AiTestScreen() }
+            composable(Routes.AI) {
+                AiChatScreen(
+                    onFindBook = {
+                        navController.navigate(Routes.SEARCH) {
+                            popUpTo(Routes.HOME) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
+            }
             placeholder(Routes.MY_BOOKS, R.string.nav_my_books)
             composable(Routes.PROFILE) {
                 DevMenuScreen(
@@ -185,7 +195,14 @@ fun BookmateApp() {
             ) {
                 ReaderScreen(
                     onBack = { navController.popBackStack() },
-                    onSubscribe = { navController.navigate(Routes.SUBSCRIPTION) }
+                    onSubscribe = { navController.navigate(Routes.SUBSCRIPTION) },
+                    onOpenChat = {
+                        navController.navigate(Routes.AI) {
+                            popUpTo(Routes.HOME) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 )
             }
             placeholder(Routes.SCAN, R.string.screen_scan)

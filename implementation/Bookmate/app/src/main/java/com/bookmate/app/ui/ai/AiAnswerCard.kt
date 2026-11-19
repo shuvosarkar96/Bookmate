@@ -56,6 +56,7 @@ fun AiAnswerCard(
                 is AiAnswerState.Streaming -> AnswerBody(state.text)
                 is AiAnswerState.Done -> AnswerBody(state.text)
                 is AiAnswerState.Error -> {
+                    if (state.partial.isNotBlank()) AnswerBody(state.partial)
                     Text(
                         text = stringResource(state.error.messageRes()),
                         style = MaterialTheme.typography.bodyMedium,

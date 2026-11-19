@@ -95,6 +95,13 @@ class AiAnswerControllerTest {
     }
 
     @Test
+    fun a_broken_stream_keeps_the_text_that_arrived() {
+        val controller = controller()
+        controller.run { flow { emit("abc"); throw AiException(AiError.TIMEOUT) } }
+        assertEquals(AiAnswerState.Error(AiError.TIMEOUT, "abc"), controller.state.value)
+    }
+
+    @Test
     fun without_a_user_it_shows_an_error_and_counts_nothing() {
         val usage = CountingUsage()
         val controller = controller(usage, user = null)

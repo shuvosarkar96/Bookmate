@@ -67,6 +67,7 @@ import com.bookmate.app.ui.theme.TextSecondary
 fun ReaderScreen(
     onBack: () -> Unit,
     onSubscribe: () -> Unit,
+    onOpenChat: () -> Unit,
     viewModel: ReaderViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -74,18 +75,14 @@ fun ReaderScreen(
     val textSize by viewModel.textSize.collectAsStateWithLifecycle()
     DisposableEffect(Unit) { onDispose { viewModel.savePosition() } }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { viewModel.savePosition() }
-    val aiState by viewModel.aiState.collectAsStateWithLifecycle()
     if (state.aiSheetOpen && book != null) {
         ReaderAiSheet(
             chapterNo = state.chapterNo,
             page = state.aiPage,
-            aiState = aiState,
-            onSummarize = viewModel::aiSummarizeChapter,
-            onRecap = viewModel::aiRecap,
-            onExplain = viewModel::aiExplain,
-            onAsk = viewModel::aiAsk,
-            onRetry = viewModel::aiRetry,
-            onBackToOptions = viewModel::aiReset,
+            onAction = { action ->
+                viewModel.startChat(action)
+                onOpenChat()
+            },
             onDismiss = viewModel::closeAiSheet
         )
     }

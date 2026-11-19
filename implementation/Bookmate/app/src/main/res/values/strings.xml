@@ -159,4 +159,12 @@
     <string name="reader_ai_send">Send</string>
     <string name="reader_ai_back">Back to options</string>
     <string name="reader_ai_counter">%1$d / %2$d</string>
+    <string name="ai_chat_title">Ask Bookmate</string>
+    <string name="ai_chat_tab_book">Book Chat</string>
+    <string name="ai_chat_tab_recommend">Recommend</string>
+    <string name="ai_chat_context">%1$s · Chapter %2$d</string>
+    <string name="ai_chat_empty">Pick a book to chat about. Open a book in the Reader and tap the sparkle button, or find a book first.</string>
+    <string name="ai_chat_find_book">Find a book</string>
+    <string name="ai_chat_input_hint">Ask about this chapter</string>
+    <string name="ai_chat_send">Send</string>
 </resources>

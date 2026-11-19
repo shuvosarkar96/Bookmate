@@ -25,12 +25,12 @@ class DefaultAiRepository @Inject constructor(
     private val aiService: AiService
 ) : AiRepository {
 
-    /** 30 seconds. A var only so that unit tests can make it short. */
+    /** 60 seconds, because the free-tier service can be slow. A var only so that unit tests can make it short. */
     internal var timeoutMillis: Long = TIMEOUT_MILLIS
 
     override suspend fun generate(prompt: String): Result<String> {
         val startedAt = System.currentTimeMillis()
-        log("generate: start")
+        log("generate: start, prompt ${prompt.length} chars")
         var attempt = 0
         while (true) {
             val result = try {
@@ -54,7 +54,7 @@ class DefaultAiRepository @Inject constructor(
     override fun generateStream(prompt: String): Flow<String> = flow {
         var emitted = false
         val startedAt = System.currentTimeMillis()
-        log("stream: start")
+        log("stream: start, prompt ${prompt.length} chars")
         emitAll(
             // A fresh request for every attempt, so a retry really asks again.
             flow { emitAll(aiService.generateStream(prompt)) }
@@ -80,7 +80,7 @@ class DefaultAiRepository @Inject constructor(
 
     /** Class name and a short message only. The prompt and the answer are never logged. */
     private fun describe(error: Throwable): String =
-        error.javaClass.simpleName + ": " + error.message.orEmpty().take(200)
+        generateSequence(error) { it.cause }.take(4).joinToString(" <- ") { it.javaClass.simpleName + ": " + it.message.orEmpty().take(120) }
 
     private fun log(message: String) {
         try {
@@ -92,7 +92,7 @@ class DefaultAiRepository @Inject constructor(
 
     private companion object {
         const val TAG = "BookmateAi"
-        const val TIMEOUT_MILLIS = 30_000L
+        const val TIMEOUT_MILLIS = 60_000L
         const val MAX_RETRIES = 1
     }
 }

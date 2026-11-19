@@ -2,6 +2,7 @@ package com.bookmate.app.ui.ai
 
 import com.bookmate.app.domain.ai.AiError
 import com.bookmate.app.domain.ai.AiErrorMapper
+import com.bookmate.app.domain.ai.AiOutput
 import com.bookmate.app.domain.ai.AiUsageRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -17,7 +18,8 @@ sealed interface AiAnswerState {
     data object Loading : AiAnswerState
     data class Streaming(val text: String) : AiAnswerState
     data class Done(val text: String) : AiAnswerState
-    data class Error(val error: AiError) : AiAnswerState
+    /** [partial] is the text that arrived before the failure, if any. */
+    data class Error(val error: AiError, val partial: String = "") : AiAnswerState
 }
 
 val AiAnswerState.isBusy: Boolean
@@ -75,17 +77,17 @@ class AiAnswerController(
             try {
                 request().collect { chunk ->
                     text.append(chunk)
-                    _state.value = AiAnswerState.Streaming(text.toString())
+                    _state.value = AiAnswerState.Streaming(AiOutput.clean(text.toString()))
                 }
-                _state.value = if (text.isBlank()) {
+                _state.value = if (AiOutput.clean(text.toString()).isBlank()) {
                     AiAnswerState.Error(AiError.BLOCKED)
                 } else {
-                    AiAnswerState.Done(text.toString())
+                    AiAnswerState.Done(AiOutput.clean(text.toString()))
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
-                _state.value = AiAnswerState.Error(AiErrorMapper.map(e))
+                _state.value = AiAnswerState.Error(AiErrorMapper.map(e), AiOutput.clean(text.toString()))
             }
         }
     }
