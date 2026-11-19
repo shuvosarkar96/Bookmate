@@ -4,6 +4,7 @@ import com.bookmate.app.data.repository.FirebaseAuthRepository
 import com.bookmate.app.data.repository.FirebaseBookRepository
 import com.bookmate.app.data.repository.FirestoreSavedBooksRepository
 import com.bookmate.app.data.local.DataStoreSettingsRepository
+import com.bookmate.app.data.ai.FirebaseAiService
 import com.bookmate.app.data.repository.FirestoreChapterRepository
 import com.bookmate.app.data.repository.FirestoreReadingProgressRepository
 import com.bookmate.app.data.repository.FirestoreSubscriptionRepository
@@ -13,6 +14,7 @@ import com.bookmate.app.domain.repository.SavedBooksRepository
 import com.bookmate.app.domain.repository.ChapterRepository
 import com.bookmate.app.domain.repository.ReadingProgressRepository
 import com.bookmate.app.domain.repository.SettingsRepository
+import com.bookmate.app.domain.ai.AiService
 import com.bookmate.app.domain.repository.SubscriptionRepository
 import dagger.Binds
 import dagger.Module
@@ -51,4 +53,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindSettingsRepository(impl: DataStoreSettingsRepository): SettingsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAiService(impl: FirebaseAiService): AiService
 }

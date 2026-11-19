@@ -133,4 +133,7 @@
     <string name="reader_finish">Mark as finished</string>
     <string name="reader_finished">Finished</string>
     <string name="reader_finish_failed">Could not save. Try again.</string>
+    <string name="ai_test_title">AI test (temporary)</string>
+    <string name="ai_test_once">Ask the AI (single answer)</string>
+    <string name="ai_test_stream">Ask the AI (streaming)</string>
 </resources>

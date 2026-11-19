@@ -23,6 +23,7 @@ import com.bookmate.app.ui.auth.LoginScreen
 import com.bookmate.app.ui.home.HomeScreen
 import com.bookmate.app.ui.subscription.CheckoutScreen
 import com.bookmate.app.ui.reader.ReaderScreen
+import com.bookmate.app.ui.ai.AiTestScreen
 import com.bookmate.app.ui.subscription.SubscriptionScreen
 import com.bookmate.app.ui.detail.BookDetailScreen
 import com.bookmate.app.ui.search.SearchScreen
@@ -158,7 +159,7 @@ fun BookmateApp() {
                     onBookClick = { bookId -> navController.navigate(Routes.bookDetail(bookId)) }
                 )
             }
-            placeholder(Routes.AI, R.string.nav_ai)
+            composable(Routes.AI) { AiTestScreen() }
             placeholder(Routes.MY_BOOKS, R.string.nav_my_books)
             composable(Routes.PROFILE) {
                 DevMenuScreen(
