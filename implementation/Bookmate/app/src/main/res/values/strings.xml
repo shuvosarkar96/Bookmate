@@ -167,4 +167,11 @@
     <string name="ai_chat_find_book">Find a book</string>
     <string name="ai_chat_input_hint">Ask about this chapter</string>
     <string name="ai_chat_send">Send</string>
+    <string name="recommend_intro">Tell me what you want to read, or leave it empty for books picked from your favorite genres.</string>
+    <string name="recommend_hint">For example: a short mystery</string>
+    <string name="recommend_button">Recommend books</string>
+    <string name="recommend_loading">Finding books for you…</string>
+    <string name="recommend_fallback_notice">AI help is not available, so these books match your favorite genres or your request.</string>
+    <string name="recommend_reason_fallback">Matches your favorite genres or your request.</string>
+    <string name="recommend_empty">I found no matching books. Try another request.</string>
 </resources>

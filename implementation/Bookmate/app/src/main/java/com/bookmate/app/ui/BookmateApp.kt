@@ -161,6 +161,8 @@ fun BookmateApp() {
             }
             composable(Routes.AI) {
                 AiChatScreen(
+                    onBookClick = { bookId -> navController.navigate(Routes.bookDetail(bookId)) },
+                    
                     onFindBook = {
                         navController.navigate(Routes.SEARCH) {
                             popUpTo(Routes.HOME) { saveState = true }

@@ -61,10 +61,11 @@ import com.bookmate.app.ui.theme.TextSecondary
 
 private val Cream = Color(0xFFFAF2DE)
 
-/** SCR-09: the AI tab. Book Chat works; Recommend comes in Step 4.7. */
+/** SCR-09: the AI tab with Book Chat and Recommend. */
 @Composable
 fun AiChatScreen(
     onFindBook: () -> Unit,
+    onBookClick: (String) -> Unit = {},
     viewModel: AiChatViewModel = hiltViewModel()
 ) {
     val chat by viewModel.context.collectAsStateWithLifecycle()
@@ -102,13 +103,8 @@ fun AiChatScreen(
                 modifier = Modifier.weight(1f)
             )
         } else {
-            Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Text(
-                    text = stringResource(R.string.coming_soon),
-                    fontSize = 14.sp,
-                    color = TextSecondary
-                )
-            }
+            RecommendTab(onBookClick = onBookClick, modifier = Modifier.weight(1f))
+
         }
     }
 }
