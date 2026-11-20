@@ -205,4 +205,16 @@
     <string name="settings_ai_how">How Bookmate AI works</string>
     <string name="settings_ai_notice">AI answers may be inaccurate. Check important facts in the book.</string>
     <string name="settings_version">Bookmate %1$s</string>
+    <string name="ai_info_intro">Bookmate AI helps you with the books in this app.</string>
+    <string name="ai_info_can_h">What it can do</string>
+    <string name="ai_info_can">Summarize a book or a chapter, recap the story so far, explain a passage, answer your questions about a book, and recommend books.</string>
+    <string name="ai_info_spoilers_h">No spoilers</string>
+    <string name="ai_info_spoilers">Recap, Explain and your questions use only the text up to where you stopped reading. A chapter summary covers the whole chapter, so it can include later parts of that chapter.</string>
+    <string name="ai_info_locked_h">Books you cannot read</string>
+    <string name="ai_info_locked">For a book without full text, or a Premium book that is locked for you, the AI uses only the book description and says so.</string>
+    <string name="ai_info_limits_h">Daily limit</string>
+    <string name="ai_info_limits">You can make %1$d AI requests per day on this device. Each summary, recap, explanation, question or recommendation counts as one.</string>
+    <string name="ai_info_privacy_h">Your messages</string>
+    <string name="ai_info_privacy">To answer, Bookmate sends your question and the book text it needs to Google\'s Gemini AI service. Bookmate does not save AI chat messages.</string>
+    <string name="ai_info_accuracy_h">Accuracy</string>
 </resources>

@@ -30,6 +30,7 @@ import com.bookmate.app.ui.detail.BookDetailScreen
 import com.bookmate.app.ui.search.SearchScreen
 import com.bookmate.app.ui.profile.ProfileScreen
 import com.bookmate.app.ui.mybooks.MyBooksScreen
+import com.bookmate.app.ui.settings.AiInfoScreen
 import com.bookmate.app.ui.settings.SettingsScreen
 import com.bookmate.app.ui.auth.RegisterScreen
 import com.bookmate.app.ui.onboarding.OnboardingScreen
@@ -223,7 +224,9 @@ fun BookmateApp() {
             }
             placeholder(Routes.EDIT_PROFILE, R.string.settings_edit_profile)
             placeholder(Routes.CHANGE_PASSWORD, R.string.settings_change_password)
-            placeholder(Routes.AI_INFO, R.string.settings_ai_how)
+            composable(Routes.AI_INFO) {
+                AiInfoScreen(onBack = { navController.popBackStack() })
+            }
             placeholder(Routes.NOTIFICATIONS, R.string.screen_notifications)
             composable(Routes.SUBSCRIPTION) {
                 SubscriptionScreen(
