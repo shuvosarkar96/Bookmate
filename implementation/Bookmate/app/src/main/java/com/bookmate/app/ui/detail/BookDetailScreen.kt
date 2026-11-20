@@ -23,9 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,6 +60,7 @@ fun BookDetailScreen(
     onBack: () -> Unit,
     onRead: (String) -> Unit,
     onSubscribe: () -> Unit,
+    onOpenChat: () -> Unit = {},
     viewModel: BookDetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -120,6 +118,10 @@ fun BookDetailScreen(
                 saveFailed = state.saveFailed,
                 onRead = onRead,
                 onSubscribe = onSubscribe,
+                onSummarize = {
+                    viewModel.openChat()
+                    onOpenChat()
+                },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -178,9 +180,9 @@ private fun BookContent(
     saveFailed: Boolean,
     onRead: (String) -> Unit,
     onSubscribe: () -> Unit,
+    onSummarize: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var aiSoon by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
         Column(
@@ -286,7 +288,7 @@ private fun BookContent(
                     .height(Dimens.ButtonHeight)
                     .clip(RoundedCornerShape(50))
                     .background(SecondaryContainerColor)
-                    .clickable { aiSoon = true },
+                    .clickable(onClick = onSummarize),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -300,14 +302,6 @@ private fun BookContent(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = TextPrimary
-                )
-            }
-            if (aiSoon) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(R.string.coming_soon),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Green
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))

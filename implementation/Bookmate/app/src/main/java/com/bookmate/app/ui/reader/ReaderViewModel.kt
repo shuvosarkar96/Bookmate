@@ -13,6 +13,10 @@ import com.bookmate.app.domain.repository.ChapterRepository
 import com.bookmate.app.domain.repository.ReadingProgressRepository
 import com.bookmate.app.domain.repository.SettingsRepository
 import com.bookmate.app.domain.repository.SubscriptionRepository
+import com.bookmate.app.domain.ai.AiChatSession
+import com.bookmate.app.domain.ai.ChatAction
+import com.bookmate.app.domain.ai.ChatContext
+import com.bookmate.app.domain.ai.VirtualPages
 import com.bookmate.app.ui.navigation.Routes
 import com.bookmate.app.util.canReadBook
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,6 +41,9 @@ data class ReaderUiState(
     val locked: Boolean = false,
     val finished: Boolean = false,
     val finishFailed: Boolean = false,
+    val aiSheetOpen: Boolean = false,
+    /** Virtual page (about 250 words) shown in the AI sheet. */
+    val aiPage: Int = 1,
     @StringRes val errorRes: Int? = null
 )
 
@@ -47,7 +54,8 @@ class ReaderViewModel @Inject constructor(
     private val chapterRepository: ChapterRepository,
     private val subscriptionRepository: SubscriptionRepository,
     private val progressRepository: ReadingProgressRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val chatSession: AiChatSession
 ) : ViewModel() {
 
     private val bookId: String = savedStateHandle.get<String>(Routes.BOOK_ID_ARG).orEmpty()
@@ -68,6 +76,26 @@ class ReaderViewModel @Inject constructor(
 
     /** Index of the paragraph at the top of the screen. Kept out of the UI state on purpose. */
     private var currentParagraph = 0
+
+    // ---- AI help: the sheet only chooses; the answer streams in the Book Chat ----
+
+    fun openAiSheet() {
+        val chapter = _uiState.value.chapter ?: return
+        val page = VirtualPages.pageOf(chapter.paragraphs, currentParagraph)
+        _uiState.update { it.copy(aiSheetOpen = true, aiPage = page) }
+    }
+
+    fun closeAiSheet() {
+        _uiState.update { it.copy(aiSheetOpen = false) }
+    }
+
+    /** Hands the choice to the Book Chat and closes the sheet. The screen then opens the AI tab. */
+    fun startChat(action: ChatAction?) {
+        val state = _uiState.value
+        val book = state.book ?: return
+        chatSession.open(ChatContext(book, state.chapterNo, currentParagraph), action)
+        _uiState.update { it.copy(aiSheetOpen = false) }
+    }
 
     init {
         load()

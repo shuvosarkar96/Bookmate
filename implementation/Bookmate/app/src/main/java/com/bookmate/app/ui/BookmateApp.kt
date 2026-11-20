@@ -23,6 +23,7 @@ import com.bookmate.app.ui.auth.LoginScreen
 import com.bookmate.app.ui.home.HomeScreen
 import com.bookmate.app.ui.subscription.CheckoutScreen
 import com.bookmate.app.ui.reader.ReaderScreen
+import com.bookmate.app.ui.ai.AiChatScreen
 import com.bookmate.app.ui.subscription.SubscriptionScreen
 import com.bookmate.app.ui.detail.BookDetailScreen
 import com.bookmate.app.ui.search.SearchScreen
@@ -158,7 +159,19 @@ fun BookmateApp() {
                     onBookClick = { bookId -> navController.navigate(Routes.bookDetail(bookId)) }
                 )
             }
-            placeholder(Routes.AI, R.string.nav_ai)
+            composable(Routes.AI) {
+                AiChatScreen(
+                    onBookClick = { bookId -> navController.navigate(Routes.bookDetail(bookId)) },
+                    
+                    onFindBook = {
+                        navController.navigate(Routes.SEARCH) {
+                            popUpTo(Routes.HOME) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
+            }
             placeholder(Routes.MY_BOOKS, R.string.nav_my_books)
             composable(Routes.PROFILE) {
                 DevMenuScreen(
@@ -175,7 +188,8 @@ fun BookmateApp() {
                 BookDetailScreen(
                     onBack = { navController.popBackStack() },
                     onRead = { bookId -> navController.navigate(Routes.reader(bookId)) },
-                    onSubscribe = { navController.navigate(Routes.SUBSCRIPTION) }
+                    onSubscribe = { navController.navigate(Routes.SUBSCRIPTION) },
+                    onOpenChat = { navController.navigate(Routes.AI) { launchSingleTop = true } }
                 )
             }
             composable(
@@ -184,7 +198,14 @@ fun BookmateApp() {
             ) {
                 ReaderScreen(
                     onBack = { navController.popBackStack() },
-                    onSubscribe = { navController.navigate(Routes.SUBSCRIPTION) }
+                    onSubscribe = { navController.navigate(Routes.SUBSCRIPTION) },
+                    onOpenChat = {
+                        navController.navigate(Routes.AI) {
+                            popUpTo(Routes.HOME) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 )
             }
             placeholder(Routes.SCAN, R.string.screen_scan)
