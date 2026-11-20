@@ -25,7 +25,8 @@ data class MyBooksUiState(
 
 @HiltViewModel
 class MyBooksViewModel @Inject constructor(
-    private val getMyBooks: GetMyBooks
+    private val getMyBooks: GetMyBooks,
+    private val tabRequest: MyBooksTabRequest
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MyBooksUiState())
@@ -33,6 +34,7 @@ class MyBooksViewModel @Inject constructor(
 
     /** Called every time the screen is shown, so the lists are always fresh. */
     fun load() {
+        tabRequest.consume()?.let { wanted -> _uiState.update { it.copy(tab = wanted) } }
         _uiState.update { it.copy(isLoading = it.books == null, errorRes = null) }
         viewModelScope.launch {
             getMyBooks().fold(

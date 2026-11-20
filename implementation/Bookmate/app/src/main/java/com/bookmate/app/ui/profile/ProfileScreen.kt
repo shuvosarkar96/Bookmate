@@ -40,6 +40,7 @@ import com.bookmate.app.R
 import com.bookmate.app.domain.model.AppUser
 import com.bookmate.app.domain.model.Role
 import com.bookmate.app.ui.components.PrimaryButton
+import com.bookmate.app.ui.mybooks.MyBooksTab
 import com.bookmate.app.ui.subscription.SubscriptionStatus
 import com.bookmate.app.ui.theme.CardSurface
 import com.bookmate.app.ui.theme.Cream
@@ -115,6 +116,8 @@ fun ProfileScreen(
             else -> {
                 HeaderCard(user)
                 Spacer(modifier = Modifier.height(12.dp))
+                StatsRow(reading = state.readingCount, finished = state.finishedCount, saved = state.savedCount)
+                Spacer(modifier = Modifier.height(12.dp))
                 GenresCard(user.favoriteGenres)
                 Spacer(modifier = Modifier.height(12.dp))
                 CurrentBookCard(
@@ -132,8 +135,14 @@ fun ProfileScreen(
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 CardBox {
-                    ListRow(stringResource(R.string.profile_saved), onOpenMyBooks)
-                    ListRow(stringResource(R.string.profile_finished), onOpenMyBooks)
+                    ListRow(stringResource(R.string.profile_saved), {
+                        viewModel.requestMyBooksTab(MyBooksTab.SAVED)
+                        onOpenMyBooks()
+                    })
+                    ListRow(stringResource(R.string.profile_finished), {
+                        viewModel.requestMyBooksTab(MyBooksTab.FINISHED)
+                        onOpenMyBooks()
+                    })
                     ListRow(stringResource(R.string.profile_notifications), onOpenNotifications)
                     ListRow(stringResource(R.string.screen_settings), onOpenSettings)
                     ListRow(
@@ -313,5 +322,36 @@ private fun ListRow(text: String, onClick: () -> Unit, color: Color = TextPrimar
     ) {
         Text(text = text, fontSize = 16.sp, color = color)
         Text(text = "›", fontSize = 20.sp, color = TextSecondary)
+    }
+}
+
+@Composable
+private fun StatsRow(reading: Int?, finished: Int?, saved: Int?) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        StatBox(stringResource(R.string.my_books_tab_reading), reading, Modifier.weight(1f))
+        StatBox(stringResource(R.string.my_books_tab_finished), finished, Modifier.weight(1f))
+        StatBox(stringResource(R.string.my_books_tab_saved), saved, Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun StatBox(label: String, value: Int?, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(CardSurface)
+            .padding(vertical = 14.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = value?.toString() ?: "-",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = DarkGreen
+        )
+        Text(text = label, fontSize = 12.sp, color = TextSecondary)
     }
 }
