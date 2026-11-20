@@ -1,6 +1,8 @@
 package com.bookmate.app.data.di
 
 import com.bookmate.app.data.repository.FirebaseAuthRepository
+import com.bookmate.app.data.repository.FirestoreAdminRepository
+import com.bookmate.app.data.repository.FirestoreNotificationRepository
 import com.bookmate.app.data.repository.FirebaseBookRepository
 import com.bookmate.app.data.repository.FirestoreSavedBooksRepository
 import com.bookmate.app.data.local.DataStoreSettingsRepository
@@ -10,6 +12,8 @@ import com.bookmate.app.data.ai.FirebaseAiService
 import com.bookmate.app.data.repository.FirestoreChapterRepository
 import com.bookmate.app.data.repository.FirestoreReadingProgressRepository
 import com.bookmate.app.data.repository.FirestoreSubscriptionRepository
+import com.bookmate.app.domain.repository.AdminRepository
+import com.bookmate.app.domain.repository.NotificationRepository
 import com.bookmate.app.domain.repository.AuthRepository
 import com.bookmate.app.domain.repository.BookRepository
 import com.bookmate.app.domain.repository.SavedBooksRepository
@@ -33,6 +37,13 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindAuthRepository(impl: FirebaseAuthRepository): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAdminRepository(impl: FirestoreAdminRepository): AdminRepository
+
+    @Binds
+    abstract fun bindNotificationRepository(impl: FirestoreNotificationRepository): NotificationRepository
 
     @Binds
     @Singleton

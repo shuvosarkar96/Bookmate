@@ -21,6 +21,7 @@ data class LoginUiState(
     val password: String = "",
     val isLoading: Boolean = false,
     @StringRes val errorRes: Int? = null,
+    @StringRes val infoRes: Int? = null,
     val loggedInUser: AppUser? = null
 )
 
@@ -33,15 +34,34 @@ class LoginViewModel @Inject constructor(
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     fun onEmailChange(value: String) {
-        _uiState.update { it.copy(email = value, errorRes = null) }
+        _uiState.update { it.copy(email = value, errorRes = null, infoRes = null) }
     }
 
     fun onPasswordChange(value: String) {
-        _uiState.update { it.copy(password = value, errorRes = null) }
+        _uiState.update { it.copy(password = value, errorRes = null, infoRes = null) }
     }
 
-    fun onLoginClick() {
+    fun onForgotClick() {
         val current = _uiState.value
+        if (current.isLoading) return
+        if (!isValidEmail(current.email)) {
+            _uiState.update { it.copy(errorRes = R.string.error_email_invalid, infoRes = null) }
+            return
+        }
+        _uiState.update { it.copy(isLoading = true, errorRes = null, infoRes = null) }
+        viewModelScope.launch {
+            authRepository.sendPasswordReset(current.email)
+                .onSuccess {
+                    _uiState.update { s -> s.copy(isLoading = false, infoRes = R.string.login_reset_sent) }
+                }
+                .onFailure { error ->
+                    val failure = (error as? AuthException)?.failure
+                    _uiState.update { s -> s.copy(isLoading = false, errorRes = failure.messageRes()) }
+                }
+        }
+    }
+
+    fun onLoginClick() {        val current = _uiState.value
         if (current.isLoading) return
         if (!isValidEmail(current.email)) {
             _uiState.update { it.copy(errorRes = R.string.error_email_invalid) }
@@ -51,7 +71,7 @@ class LoginViewModel @Inject constructor(
             _uiState.update { it.copy(errorRes = R.string.error_password_empty) }
             return
         }
-        _uiState.update { it.copy(isLoading = true, errorRes = null) }
+        _uiState.update { it.copy(isLoading = true, errorRes = null, infoRes = null) }
         viewModelScope.launch {
             authRepository.login(current.email, current.password)
                 .onSuccess { user ->

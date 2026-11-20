@@ -4,6 +4,7 @@ enum class AuthFailure {
     INVALID_CREDENTIALS,
     EMAIL_IN_USE,
     WEAK_PASSWORD,
+    WRONG_PASSWORD,
     NETWORK,
     UNKNOWN
 }

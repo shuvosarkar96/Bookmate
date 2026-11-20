@@ -6,6 +6,7 @@ import com.bookmate.app.domain.model.AuthFailure
 import com.bookmate.app.domain.model.Role
 import com.bookmate.app.domain.repository.AuthRepository
 import com.google.firebase.FirebaseNetworkException
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -61,6 +62,41 @@ class FirebaseAuthRepository @Inject constructor(
                     "onboardingDone" to true
                 )
             ).await()
+            Unit
+        }
+
+    override suspend fun updateProfile(name: String, favoriteGenres: List<String>): Result<Unit> =
+        safeCall {
+            val uid = auth.currentUser?.uid ?: throw AuthException(AuthFailure.UNKNOWN)
+            usersRef(uid).update(
+                mapOf(
+                    "name" to name.trim(),
+                    "favoriteGenres" to favoriteGenres
+                )
+            ).await()
+            Unit
+        }
+
+    override suspend fun changePassword(currentPassword: String, newPassword: String): Result<Unit> =
+        safeCall {
+            val user = auth.currentUser ?: throw AuthException(AuthFailure.UNKNOWN)
+            val email = user.email ?: throw AuthException(AuthFailure.UNKNOWN)
+            try {
+                user.reauthenticate(EmailAuthProvider.getCredential(email, currentPassword)).await()
+            } catch (e: FirebaseAuthInvalidCredentialsException) {
+                throw AuthException(AuthFailure.WRONG_PASSWORD, e)
+            }
+            user.updatePassword(newPassword).await()
+            Unit
+        }
+
+    override suspend fun sendPasswordReset(email: String): Result<Unit> =
+        safeCall {
+            try {
+                auth.sendPasswordResetEmail(email.trim()).await()
+            } catch (e: FirebaseAuthInvalidUserException) {
+                // Do not reveal whether this email is registered.
+            }
             Unit
         }
 

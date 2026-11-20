@@ -51,6 +51,8 @@ import com.bookmate.app.domain.ai.ChatContext
 import com.bookmate.app.domain.ai.ChatMessage
 import com.bookmate.app.domain.ai.ChatRole
 import com.bookmate.app.domain.ai.PromptBuilder
+import com.bookmate.app.domain.model.Book
+import com.bookmate.app.domain.model.ReadingProgress
 import com.bookmate.app.ui.components.PrimaryButton
 import com.bookmate.app.ui.theme.CardSurface
 import com.bookmate.app.ui.theme.Dimens
@@ -72,6 +74,8 @@ fun AiChatScreen(
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val answer by viewModel.answer.collectAsStateWithLifecycle()
     var tab by rememberSaveable { mutableIntStateOf(0) }
+    val picker by viewModel.picker.collectAsStateWithLifecycle()
+    LaunchedEffect(chat == null) { if (chat == null) viewModel.loadPicker() }
 
     Column(
         modifier = Modifier
@@ -100,6 +104,8 @@ fun AiChatScreen(
                 onFindBook = onFindBook,
                 onSend = viewModel::send,
                 onRetry = viewModel::retry,
+                picker = picker,
+                onPick = viewModel::pick,
                 modifier = Modifier.weight(1f)
             )
         } else {
@@ -152,27 +158,12 @@ private fun BookChat(
     onFindBook: () -> Unit,
     onSend: (ChatAction) -> Unit,
     onRetry: () -> Unit,
+    picker: PickerState,
+    onPick: (Book, ReadingProgress?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (chat == null) {
-        Column(
-            modifier = modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = stringResource(R.string.ai_chat_empty),
-                fontSize = 15.sp,
-                color = TextSecondary,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            PrimaryButton(
-                text = stringResource(R.string.ai_chat_find_book),
-                onClick = onFindBook,
-                enabled = true
-            )
-        }
+        PickBook(picker = picker, onPick = onPick, onFindBook = onFindBook, modifier = modifier)
         return
     }
 
