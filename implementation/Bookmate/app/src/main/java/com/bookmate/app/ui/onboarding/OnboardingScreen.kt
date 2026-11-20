@@ -155,7 +155,7 @@ fun OnboardingScreen(
 }
 
 @Composable
-private fun GenreChip(
+internal fun GenreChip(
     label: String,
     selected: Boolean,
     onToggle: () -> Unit

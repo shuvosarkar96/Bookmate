@@ -59,6 +59,7 @@ fun ProfileScreen(
     onOpenMyBooks: () -> Unit,
     onOpenNotifications: () -> Unit,
     onOpenSettings: () -> Unit,
+    onEditProfile: () -> Unit,
     onOpenAdmin: (String) -> Unit,
     onLoggedOut: () -> Unit,
     viewModel: ProfileViewModel = hiltViewModel()
@@ -135,6 +136,7 @@ fun ProfileScreen(
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 CardBox {
+                    ListRow(stringResource(R.string.settings_edit_profile), onClick = onEditProfile)
                     ListRow(stringResource(R.string.profile_saved), {
                         viewModel.requestMyBooksTab(MyBooksTab.SAVED)
                         onOpenMyBooks()

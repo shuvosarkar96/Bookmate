@@ -20,6 +20,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.bookmate.app.R
+import com.bookmate.app.ui.admin.AddBookScreen
+import com.bookmate.app.ui.admin.ManageBooksScreen
+import com.bookmate.app.ui.admin.PlanPriceScreen
+import com.bookmate.app.ui.admin.SubscribersScreen
+import com.bookmate.app.ui.notifications.NotificationsScreen
 import com.bookmate.app.ui.auth.LoginScreen
 import com.bookmate.app.ui.home.HomeScreen
 import com.bookmate.app.ui.subscription.CheckoutScreen
@@ -28,9 +33,11 @@ import com.bookmate.app.ui.ai.AiChatScreen
 import com.bookmate.app.ui.subscription.SubscriptionScreen
 import com.bookmate.app.ui.detail.BookDetailScreen
 import com.bookmate.app.ui.search.SearchScreen
+import com.bookmate.app.ui.profile.EditProfileScreen
 import com.bookmate.app.ui.profile.ProfileScreen
 import com.bookmate.app.ui.mybooks.MyBooksScreen
 import com.bookmate.app.ui.settings.AiInfoScreen
+import com.bookmate.app.ui.settings.ChangePasswordScreen
 import com.bookmate.app.ui.settings.SettingsScreen
 import com.bookmate.app.ui.auth.RegisterScreen
 import com.bookmate.app.ui.onboarding.OnboardingScreen
@@ -180,6 +187,7 @@ fun BookmateApp() {
                     },
                     onOpenNotifications = { navController.navigate(Routes.NOTIFICATIONS) },
                     onOpenSettings = { navController.navigate(Routes.SETTINGS) },
+                    onEditProfile = { navController.navigate(Routes.EDIT_PROFILE) },
                     onOpenAdmin = { route -> navController.navigate(route) },
                     onLoggedOut = { restartApp(context) }
                 )
@@ -222,12 +230,18 @@ fun BookmateApp() {
                     onLoggedOut = { restartApp(context) }
                 )
             }
-            placeholder(Routes.EDIT_PROFILE, R.string.settings_edit_profile)
-            placeholder(Routes.CHANGE_PASSWORD, R.string.settings_change_password)
+            composable(Routes.EDIT_PROFILE) {
+                EditProfileScreen(onBack = { navController.popBackStack() })
+            }
+            composable(Routes.CHANGE_PASSWORD) {
+                ChangePasswordScreen(onBack = { navController.popBackStack() })
+            }
             composable(Routes.AI_INFO) {
                 AiInfoScreen(onBack = { navController.popBackStack() })
             }
-            placeholder(Routes.NOTIFICATIONS, R.string.screen_notifications)
+            composable(Routes.NOTIFICATIONS) {
+                NotificationsScreen(onBack = { navController.popBackStack() })
+            }
             composable(Routes.SUBSCRIPTION) {
                 SubscriptionScreen(
                     onBack = { navController.popBackStack() },
@@ -241,10 +255,27 @@ fun BookmateApp() {
                 )
             }
 
-            placeholder(Routes.ADMIN_ADD_BOOK, R.string.screen_admin_add_book)
-            placeholder(Routes.ADMIN_MANAGE_BOOKS, R.string.screen_admin_manage_books)
-            placeholder(Routes.ADMIN_SUBSCRIBERS, R.string.screen_admin_subscribers)
-            placeholder(Routes.ADMIN_PLAN_PRICE, R.string.screen_admin_plan_price)
+            composable(Routes.ADMIN_ADD_BOOK) {
+                AddBookScreen(onBack = { navController.popBackStack() })
+            }
+            composable(Routes.ADMIN_MANAGE_BOOKS) {
+                ManageBooksScreen(
+                    onBack = { navController.popBackStack() },
+                    onEdit = { bookId -> navController.navigate(Routes.adminEditBook(bookId)) }
+                )
+            }
+            composable(
+                route = Routes.ADMIN_EDIT_BOOK,
+                arguments = listOf(navArgument(Routes.BOOK_ID_ARG) { type = NavType.StringType })
+            ) {
+                AddBookScreen(onBack = { navController.popBackStack() })
+            }
+            composable(Routes.ADMIN_SUBSCRIBERS) {
+                SubscribersScreen(onBack = { navController.popBackStack() })
+            }
+            composable(Routes.ADMIN_PLAN_PRICE) {
+                PlanPriceScreen(onBack = { navController.popBackStack() })
+            }
         }
 
         if (currentTab != null) {

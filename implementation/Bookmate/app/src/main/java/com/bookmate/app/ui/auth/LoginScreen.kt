@@ -19,9 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -48,7 +45,6 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    var showComingSoon by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.loggedInUser) {
         state.loggedInUser?.let(onLoggedIn)
@@ -109,11 +105,11 @@ fun LoginScreen(
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .align(Alignment.End)
-                        .clickable { showComingSoon = true }
+                        .clickable(enabled = !state.isLoading, onClick = viewModel::onForgotClick)
                 )
-                if (showComingSoon) {
+                state.infoRes?.let { infoRes ->
                     Text(
-                        text = stringResource(R.string.coming_soon),
+                        text = stringResource(infoRes),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary
                     )

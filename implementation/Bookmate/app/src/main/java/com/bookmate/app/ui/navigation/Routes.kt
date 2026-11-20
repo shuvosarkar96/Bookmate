@@ -30,9 +30,11 @@ object Routes {
     const val ADMIN_MANAGE_BOOKS = "admin/manage_books"
     const val ADMIN_SUBSCRIBERS = "admin/subscribers"
     const val ADMIN_PLAN_PRICE = "admin/plan_price"
+    const val ADMIN_EDIT_BOOK = "admin/edit_book/{bookId}"
 
     fun bookDetail(bookId: String) = "book/$bookId"
     fun reader(bookId: String) = "reader/$bookId"
+    fun adminEditBook(bookId: String) = "admin/edit_book/$bookId"
 }
 
 fun BottomNavTab.route(): String = when (this) {
