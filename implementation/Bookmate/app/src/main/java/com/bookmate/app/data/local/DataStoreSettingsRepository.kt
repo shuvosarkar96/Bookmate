@@ -3,6 +3,7 @@ package com.bookmate.app.data.local
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -21,11 +22,19 @@ class DataStoreSettingsRepository @Inject constructor(
 ) : SettingsRepository {
 
     private val textSizeKey = intPreferencesKey("reading_text_size")
+    private val remindersKey = booleanPreferencesKey("reminders_enabled")
 
     override val readingTextSize: Flow<Int> =
         context.settingsDataStore.data.map { it[textSizeKey] ?: SettingsRepository.DEFAULT_TEXT_SIZE }
 
     override suspend fun setReadingTextSize(sizeSp: Int) {
         context.settingsDataStore.edit { it[textSizeKey] = sizeSp }
+    }
+
+    override val remindersEnabled: Flow<Boolean> =
+        context.settingsDataStore.data.map { it[remindersKey] ?: true }
+
+    override suspend fun setRemindersEnabled(enabled: Boolean) {
+        context.settingsDataStore.edit { it[remindersKey] = enabled }
     }
 }
