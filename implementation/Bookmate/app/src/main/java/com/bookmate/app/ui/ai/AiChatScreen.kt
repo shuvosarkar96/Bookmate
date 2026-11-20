@@ -196,7 +196,8 @@ private fun BookChat(
                 .padding(horizontal = 14.dp, vertical = 8.dp)
         ) {
             Text(
-                text = stringResource(R.string.ai_chat_context, chat.book.title, chat.chapter),
+                text = if (chat.isBookLevel) chat.book.title
+                else stringResource(R.string.ai_chat_context, chat.book.title, chat.chapter),
                 fontSize = 13.sp,
                 color = TextPrimary
             )
@@ -221,8 +222,8 @@ private fun BookChat(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             QuickChip(stringResource(R.string.reader_ai_summarize), !busy) { onSend(ChatAction.Summary) }
-            QuickChip(stringResource(R.string.reader_ai_recap), !busy) { onSend(ChatAction.Recap) }
-            QuickChip(stringResource(R.string.reader_ai_explain), !busy) { onSend(ChatAction.Explain) }
+            QuickChip(stringResource(R.string.reader_ai_recap), !busy && !chat.isBookLevel) { onSend(ChatAction.Recap) }
+            QuickChip(stringResource(R.string.reader_ai_explain), !busy && !chat.isBookLevel) { onSend(ChatAction.Explain) }
         }
         Spacer(modifier = Modifier.height(8.dp))
         val sendLabel = stringResource(R.string.ai_chat_send)

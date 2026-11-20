@@ -5,6 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bookmate.app.R
+import com.bookmate.app.domain.ai.AiChatSession
+import com.bookmate.app.domain.ai.ChatAction
+import com.bookmate.app.domain.ai.ChatContext
 import com.bookmate.app.domain.model.Book
 import com.bookmate.app.domain.repository.BookRepository
 import com.bookmate.app.domain.repository.SavedBooksRepository
@@ -34,7 +37,8 @@ class BookDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val bookRepository: BookRepository,
     private val savedBooksRepository: SavedBooksRepository,
-    private val subscriptionRepository: SubscriptionRepository
+    private val subscriptionRepository: SubscriptionRepository,
+    private val chatSession: AiChatSession
 ) : ViewModel() {
 
     private val bookId: String = savedStateHandle.get<String>(Routes.BOOK_ID_ARG).orEmpty()
@@ -79,6 +83,12 @@ class BookDetailViewModel @Inject constructor(
             val hasActive = subscriptionRepository.getMySubscription().getOrNull()?.isActive() == true
             _uiState.update { it.copy(canRead = canReadBook(book, hasActive)) }
         }
+    }
+
+    /** Hands this book to the Book Chat and asks for its summary. */
+    fun openChat() {
+        val book = _uiState.value.book ?: return
+        chatSession.open(ChatContext.forBook(book, _uiState.value.canRead), ChatAction.Summary)
     }
 
     fun onSaveToggle() {

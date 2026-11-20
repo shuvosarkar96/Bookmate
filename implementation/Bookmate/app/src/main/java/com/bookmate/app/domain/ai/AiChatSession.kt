@@ -18,7 +18,25 @@ sealed interface ChatAction {
 }
 
 /** The book and the reader position the chat works at. The position decides what text may be sent. */
-data class ChatContext(val book: Book, val chapter: Int, val paragraph: Int)
+data class ChatContext(
+    val book: Book,
+    val chapter: Int,
+    val paragraph: Int,
+    /** True when only the book description may be used: no readable full text. */
+    val descriptionOnly: Boolean = false
+) {
+    /** A chat opened from Book Detail has no reading position (chapter 0). */
+    val isBookLevel: Boolean get() = chapter == 0
+
+    companion object {
+        fun forBook(book: Book, canRead: Boolean) = ChatContext(
+            book = book,
+            chapter = 0,
+            paragraph = 0,
+            descriptionOnly = !(canRead && book.hasFullText)
+        )
+    }
+}
 
 enum class ChatRole { USER, AI }
 

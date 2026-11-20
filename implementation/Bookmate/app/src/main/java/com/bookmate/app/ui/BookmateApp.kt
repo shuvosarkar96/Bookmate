@@ -186,7 +186,8 @@ fun BookmateApp() {
                 BookDetailScreen(
                     onBack = { navController.popBackStack() },
                     onRead = { bookId -> navController.navigate(Routes.reader(bookId)) },
-                    onSubscribe = { navController.navigate(Routes.SUBSCRIPTION) }
+                    onSubscribe = { navController.navigate(Routes.SUBSCRIPTION) },
+                    onOpenChat = { navController.navigate(Routes.AI) { launchSingleTop = true } }
                 )
             }
             composable(

@@ -10,7 +10,9 @@ import com.bookmate.app.domain.ai.ChatMessage
 import com.bookmate.app.domain.ai.ChatRole
 import com.bookmate.app.domain.usecase.AskAboutBook
 import com.bookmate.app.domain.usecase.ExplainPart
+import com.bookmate.app.domain.usecase.GetBookSummary
 import com.bookmate.app.domain.usecase.GetChapterSummary
+import com.bookmate.app.domain.usecase.GetDescriptionSummary
 import com.bookmate.app.domain.usecase.GetRecap
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +24,8 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class AiChatViewModel @Inject constructor(
     private val session: AiChatSession,
+    private val getBookSummary: GetBookSummary,
+    private val getDescriptionSummary: GetDescriptionSummary,
     private val getChapterSummary: GetChapterSummary,
     private val getRecap: GetRecap,
     private val explainPart: ExplainPart,
@@ -59,6 +63,8 @@ class AiChatViewModel @Inject constructor(
         val chat = session.context.value ?: return
         if (controller.state.value.isBusy) return
         if (action is ChatAction.Question && action.text.isBlank()) return
+        // Without a reading position only the summary is possible.
+        if (chat.isBookLevel && action != ChatAction.Summary) return
         session.addMessage(
             ChatMessage(
                 role = ChatRole.USER,
@@ -70,7 +76,11 @@ class AiChatViewModel @Inject constructor(
         val chapter = chat.chapter
         val position = chat.paragraph
         when (action) {
-            ChatAction.Summary -> controller.run { getChapterSummary(book, chapter) }
+            ChatAction.Summary -> when {
+                chat.descriptionOnly -> controller.run { getDescriptionSummary(book) }
+                chat.isBookLevel -> controller.run { getBookSummary(book) }
+                else -> controller.run { getChapterSummary(book, chapter) }
+            }
             ChatAction.Recap -> controller.run { getRecap(book, chapter, position) }
             ChatAction.Explain -> controller.run { explainPart(book, chapter, position) }
             is ChatAction.Question -> controller.run { askAboutBook(book, chapter, position, action.text) }
