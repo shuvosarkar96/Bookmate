@@ -66,10 +66,23 @@ class FirestoreReadingProgressRepository @Inject constructor(
             ?.let { BookProgress(bookId = it.id, progress = it.toProgress()) }
     }
 
+    override suspend fun getAllProgress(): Result<List<BookProgress>> = safeCall {
+        val uid = auth.currentUser?.uid ?: return@safeCall emptyList()
+        firestore.collection("users").document(uid)
+            .collection("readingProgress")
+            .orderBy("updatedAt", Query.Direction.DESCENDING)
+            .limit(200)
+            .get()
+            .await()
+            .documents
+            .map { BookProgress(bookId = it.id, progress = it.toProgress()) }
+    }
+
     private fun DocumentSnapshot.toProgress() = ReadingProgress(
         chapter = getLong("chapter")?.toInt() ?: 1,
         paragraph = getLong("paragraph")?.toInt() ?: 0,
-        finished = getBoolean("finished") ?: false
+        finished = getBoolean("finished") ?: false,
+        finishedAt = getTimestamp("finishedAt")?.toDate()?.time
     )
 
     private fun progressRef(bookId: String): DocumentReference? {

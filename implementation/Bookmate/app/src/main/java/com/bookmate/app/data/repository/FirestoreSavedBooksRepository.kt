@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CancellationException
@@ -35,6 +36,17 @@ class FirestoreSavedBooksRepository @Inject constructor(
             ref.delete().await()
         }
         Unit
+    }
+
+    override suspend fun getSavedBookIds(): Result<List<String>> = safeCall {
+        val uid = auth.currentUser?.uid ?: return@safeCall emptyList()
+        firestore.collection("users").document(uid)
+            .collection("savedBooks")
+            .orderBy("savedAt", Query.Direction.DESCENDING)
+            .get()
+            .await()
+            .documents
+            .map { it.id }
     }
 
     private fun savedRef(bookId: String): DocumentReference? {

@@ -13,6 +13,9 @@ interface ReadingProgressRepository {
     /** The most recently read book that is not finished, or null. */
     suspend fun getLatestInProgress(): Result<BookProgress?>
 
+    /** Every progress of the signed-in Member, most recently updated first (at most 200). */
+    suspend fun getAllProgress(): Result<List<BookProgress>>
+
     /** Marks the book as finished (finished = true, finishedAt = now). */
     suspend fun markFinished(bookId: String, chapter: Int): Result<Unit>
 }

@@ -4,7 +4,9 @@ package com.bookmate.app.domain.model
 data class ReadingProgress(
     val chapter: Int,
     val paragraph: Int,
-    val finished: Boolean
+    val finished: Boolean,
+    /** When the book was finished, in epoch milliseconds, if known. */
+    val finishedAt: Long? = null
 )
 
 /** A reading progress together with the id of its book. */
