@@ -1,6 +1,7 @@
 package com.bookmate.app.domain.ai
 
 import com.bookmate.app.domain.model.Book
+import com.bookmate.app.domain.model.ReadingProgress
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +30,17 @@ data class ChatContext(
     val isBookLevel: Boolean get() = chapter == 0
 
     companion object {
+        /**
+         * A book picked in the chat. With full text the Member may read and a saved reading position,
+         * the chat starts at that position. Otherwise it starts at book level.
+         */
+        fun forPick(book: Book, canRead: Boolean, progress: ReadingProgress?): ChatContext =
+            if (canRead && book.hasFullText && progress != null && progress.chapter >= 1) {
+                ChatContext(book, progress.chapter, progress.paragraph)
+            } else {
+                forBook(book, canRead)
+            }
+
         fun forBook(book: Book, canRead: Boolean) = ChatContext(
             book = book,
             chapter = 0,
