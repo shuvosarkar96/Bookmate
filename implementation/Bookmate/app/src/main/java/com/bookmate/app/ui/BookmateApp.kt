@@ -29,6 +29,7 @@ import com.bookmate.app.ui.subscription.SubscriptionScreen
 import com.bookmate.app.ui.detail.BookDetailScreen
 import com.bookmate.app.ui.search.SearchScreen
 import com.bookmate.app.ui.profile.ProfileScreen
+import com.bookmate.app.ui.mybooks.MyBooksScreen
 import com.bookmate.app.ui.auth.RegisterScreen
 import com.bookmate.app.ui.onboarding.OnboardingScreen
 import com.bookmate.app.ui.splash.SplashScreen
@@ -159,7 +160,11 @@ fun BookmateApp() {
                     }
                 )
             }
-            placeholder(Routes.MY_BOOKS, R.string.nav_my_books)
+            composable(Routes.MY_BOOKS) {
+                MyBooksScreen(
+                    onBookClick = { bookId -> navController.navigate(Routes.bookDetail(bookId)) }
+                )
+            }
             composable(Routes.PROFILE) {
                 ProfileScreen(
                     onSubscribe = { navController.navigate(Routes.SUBSCRIPTION) },

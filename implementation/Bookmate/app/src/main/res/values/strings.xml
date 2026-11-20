@@ -186,4 +186,12 @@
     <string name="profile_notifications">Notifications</string>
     <string name="profile_logout">Log out</string>
     <string name="profile_admin_title">Admin tools</string>
+    <string name="my_books_tab_reading">Reading</string>
+    <string name="my_books_tab_saved">Saved</string>
+    <string name="my_books_tab_finished">Finished</string>
+    <string name="my_books_empty_reading">You are not reading any book yet.</string>
+    <string name="my_books_empty_saved">You have not saved any book yet.</string>
+    <string name="my_books_empty_finished">You have not finished any book yet.</string>
+    <string name="my_books_finished_total">%1$d finished books</string>
+    <string name="my_books_month">%1$s %2$d (%3$d)</string>
 </resources>
