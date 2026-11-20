@@ -194,4 +194,15 @@
     <string name="my_books_empty_finished">You have not finished any book yet.</string>
     <string name="my_books_finished_total">%1$d finished books</string>
     <string name="my_books_month">%1$s %2$d (%3$d)</string>
+    <string name="settings_section_account">ACCOUNT</string>
+    <string name="settings_section_reading">READING</string>
+    <string name="settings_section_about_ai">ABOUT AI</string>
+    <string name="settings_edit_profile">Edit profile</string>
+    <string name="settings_change_password">Change password</string>
+    <string name="settings_text_size">Text size</string>
+    <string name="settings_preview">This is how your text will look in the Reader.</string>
+    <string name="settings_reminders">Subscription reminders</string>
+    <string name="settings_ai_how">How Bookmate AI works</string>
+    <string name="settings_ai_notice">AI answers may be inaccurate. Check important facts in the book.</string>
+    <string name="settings_version">Bookmate %1$s</string>
 </resources>

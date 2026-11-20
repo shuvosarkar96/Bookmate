@@ -22,6 +22,9 @@ object Routes {
     const val SUBSCRIPTION = "subscription"
     const val CHECKOUT = "checkout"
     const val NOTIFICATIONS = "notifications"
+    const val EDIT_PROFILE = "edit_profile"
+    const val CHANGE_PASSWORD = "change_password"
+    const val AI_INFO = "ai_info"
 
     const val ADMIN_ADD_BOOK = "admin/add_book"
     const val ADMIN_MANAGE_BOOKS = "admin/manage_books"
